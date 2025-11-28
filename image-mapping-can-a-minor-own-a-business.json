@@ -1,0 +1,52 @@
+{
+    "article_slug": "can-a-minor-own-a-business",
+    "article_url": "https:\/\/bizee.com\/articles\/can-a-minor-own-a-business",
+    "processed_at": "2025-11-28 21:15:50",
+    "images": [
+        {
+            "original_url": "\/_next\/image?url=%2F_next%2Fstatic%2Fmedia%2Fmobile.3db9b7ad.png&amp;w=3840&amp;q=75",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "\/_next\/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fbizee-website-assets%2FTeenager-With-Headphones-On.webp&amp;w=3840&amp;q=75",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "https:\/\/s3.us-east-2.amazonaws.com\/bizee-website-assets\/rectangle-shape-primary.svg",
+            "s3_path": "articles\/main-content\/rectangle-shape-primary.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "https:\/\/s3.us-east-2.amazonaws.com\/bizee-website-assets\/rectangle-shape-white.svg",
+            "s3_path": "articles\/main-content\/rectangle-shape-white.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "\/_next\/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fbizee-website-assets%2FMan-with-sunglasses-and-book-sitting-on-balcony.webp&amp;w=384&amp;q=90",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "\/_next\/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fbizee-website-assets%2Fa-view-on-the-city.webp&amp;w=256&amp;q=90",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "\/_next\/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fbizee-website-assets%2Fman-in-a-suit-using-a-macbook-1.webp&amp;w=384&amp;q=90",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "\/_next\/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fbizee-website-assets%2Fcarriebuchholzpowers-min.webp&amp;w=3840&amp;q=75",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        },
+        {
+            "original_url": "\/_next\/image?url=https%3A%2F%2Fs3.us-east-2.amazonaws.com%2Fbizee-website-assets%2Fpodcast-thumbnail.webp&amp;w=3840&amp;q=75",
+            "s3_path": "articles\/main-content\/image.webp",
+            "type": "main-content"
+        }
+    ]
+}
