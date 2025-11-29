@@ -170,6 +170,137 @@ content:
 
 Nota: El texto del link (`"here if you're ready"`) usa comillas dobles porque contiene un apostrofe.
 
+## 3. Saltos de Línea entre Elementos
+
+### Regla: 1 Salto de Línea entre Párrafos, Headings y Lists
+
+**Regla General:** Entre párrafos, headings y lists debe haber exactamente **1 salto de línea** (`hardBreak`). Esto asegura una separación visual consistente en el contenido.
+
+### Estructura Correcta
+
+```yaml
+content:
+  -
+    type: heading
+    attrs:
+      level: 2
+    content:
+      -
+        type: text
+        text: 'Título de Sección'
+  -
+    type: paragraph
+    content:
+      -
+        type: hardBreak
+  -
+    type: paragraph
+    content:
+      -
+        type: text
+        text: 'Texto del párrafo después del heading.'
+  -
+    type: paragraph
+    content:
+      -
+        type: hardBreak
+  -
+    type: bulletList
+    content:
+      -
+        type: listItem
+        content:
+          -
+            type: paragraph
+            content:
+              -
+                type: text
+                text: 'Item 1'
+  -
+    type: paragraph
+    content:
+      -
+        type: hardBreak
+  -
+    type: paragraph
+    content:
+      -
+        type: text
+        text: 'Texto después de la lista.'
+```
+
+### Reglas Específicas
+
+1. **Después de un heading:** Debe haber un `hardBreak` seguido de un párrafo
+2. **Entre párrafos:** Debe haber un `hardBreak` entre cada par de párrafos
+3. **Antes de una lista:** Debe haber un `hardBreak` antes de la lista
+4. **Después de una lista:** Debe haber un `hardBreak` después de la lista
+5. **Entre listas:** Debe haber un `hardBreak` entre listas consecutivas
+
+### Ejemplo Incorrecto (sin saltos de línea)
+
+```yaml
+content:
+  -
+    type: heading
+    attrs:
+      level: 2
+    content:
+      -
+        type: text
+        text: 'Título'
+  -
+    type: paragraph
+    content:
+      -
+        type: text
+        text: 'Texto sin salto de línea'
+  -
+    type: bulletList
+    # ... lista sin salto antes
+```
+
+### Ejemplo Correcto (con saltos de línea)
+
+```yaml
+content:
+  -
+    type: heading
+    attrs:
+      level: 2
+    content:
+      -
+        type: text
+        text: 'Título'
+  -
+    type: paragraph
+    content:
+      -
+        type: hardBreak
+  -
+    type: paragraph
+    content:
+      -
+        type: text
+        text: 'Texto con salto de línea'
+  -
+    type: paragraph
+    content:
+      -
+        type: hardBreak
+  -
+    type: bulletList
+    # ... lista con salto antes
+```
+
+### Checklist
+
+- [ ] ¿Hay un `hardBreak` después de cada heading?
+- [ ] ¿Hay un `hardBreak` entre párrafos consecutivos?
+- [ ] ¿Hay un `hardBreak` antes de cada lista?
+- [ ] ¿Hay un `hardBreak` después de cada lista?
+- [ ] ¿Hay exactamente 1 `hardBreak` entre elementos (no más, no menos)?
+
 ## Referencias
 
 - Ver `README-STRUCTURE.md` para reglas de estructura de contenido

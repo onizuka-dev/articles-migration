@@ -8,8 +8,10 @@ Before using any migration scripts, ensure you follow these formatting rules:
 
 1. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions). Use single quotes (`'`) for text without apostrophes.
 2. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`.
+3. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
+4. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 
-See `README-FORMATTING.md` for complete formatting guidelines.
+See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines.
 
 ## Available Scripts
 
@@ -19,9 +21,10 @@ See `README-FORMATTING.md` for complete formatting guidelines.
 **IMPORTANT:** Before running this script, ensure your article follows these structure rules:
 - Only the first paragraph should be in `intro`
 - All remaining content should be in `main_blocks`
-- Consecutive `rich_text` blocks should be combined into one, unless separated by another component
+- ⚠️ **CRITICAL:** Consecutive `rich_text` blocks must be combined into one, unless separated by another component
+- There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists
 
-See `README-STRUCTURE.md` for complete structure guidelines.
+See `README-STRUCTURE.md` and `README-FORMATTING.md` for complete structure guidelines.
 
 **Parameters:**
 ```bash
@@ -196,9 +199,39 @@ php migrate-article.php
 **What it does:**
 - Shows information about the migration process
 - Generates base article structure
-- Includes `generateArticleButton()` helper function to create buttons
+- Includes helper functions for article structure
 
-**Note:** This script is primarily a template and needs to be modified for each specific article.
+**Available Helper Functions:**
+
+1. **`generateArticleButton($id, $label, $url, $openInNewTab = false)`**
+   - Generates article_button blocks with correct format (no bold, left-aligned)
+
+2. **`combineConsecutiveRichTextBlocks($mainBlocks)`** ⚠️ CRITICAL
+   - Combines consecutive `rich_text` blocks into a single block
+   - Only combines blocks that are not separated by other components
+   - **This rule must be applied to all migrations**
+
+3. **`ensureProperLineBreaks($content)`**
+   - Ensures exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists
+   - Adds `hardBreak` where needed according to formatting rules
+
+4. **`processMainBlocks($mainBlocks)`**
+   - Applies all structure rules automatically:
+     - Combines consecutive `rich_text` blocks
+     - Ensures proper line breaks
+   - **Use this function to process main_blocks before finalizing migration**
+
+**Usage Example:**
+```php
+$migrator = new ArticleMigrator();
+
+// After creating main_blocks array
+$processedBlocks = $migrator->processMainBlocks($mainBlocks);
+
+// Use $processedBlocks in your article structure
+```
+
+**Note:** This script is primarily a template and needs to be modified for each specific article. Always use `processMainBlocks()` before finalizing the article structure.
 
 ---
 

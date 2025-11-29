@@ -30,9 +30,11 @@ main_blocks:
       # ... resto del contenido
 ```
 
-### 2. Combinar Rich Text Consecutivos
+### 2. Combinar Rich Text Consecutivos ⚠️ REGLA CRÍTICA
 
-**Regla:** Si hay varios bloques `rich_text` consecutivos (sin otro componente en medio), deben combinarse en un solo bloque `rich_text`.
+**Regla:** Si hay varios bloques `rich_text` consecutivos (sin otro componente en medio), **DEBEN** combinarse en un solo bloque `rich_text`. Esta es una regla obligatoria que debe aplicarse siempre.
+
+**⚠️ IMPORTANTE:** Esta regla debe aplicarse automáticamente durante la migración. Nunca dejes bloques `rich_text` consecutivos separados a menos que haya un componente diferente (botón, imagen, etc.) entre ellos.
 
 **Ejemplo Incorrecto:**
 ```yaml
@@ -201,8 +203,9 @@ Antes de completar una migración, verifica:
 
 - [ ] ¿Solo el primer párrafo está en `intro`?
 - [ ] ¿El resto del contenido está en `main_blocks`?
-- [ ] ¿Los bloques `rich_text` consecutivos están combinados?
+- [ ] ⚠️ **¿Los bloques `rich_text` consecutivos están combinados?** (CRÍTICO: Verificar que no haya bloques `rich_text` seguidos sin componente intermedio)
 - [ ] ¿Los bloques `rich_text` separados por otros componentes están separados?
+- [ ] ¿Hay exactamente 1 salto de línea (`hardBreak`) entre párrafos, headings y lists?
 - [ ] ¿El formato YAML es correcto?
 
 ## Ejemplo Completo

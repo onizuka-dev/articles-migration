@@ -7,10 +7,11 @@ This directory contains scripts and documentation for migrating articles to the 
 Before migrating, ensure you follow these structure and formatting rules:
 
 1. **Intro:** Only the first paragraph goes in `intro`. All remaining content goes in `main_blocks`.
-2. **Rich Text Blocks:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
+2. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.). This rule must be applied automatically during migration.
 3. **Lists:** All lists (including numbered lists) should be migrated as `bulletList`.
 4. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions like `you'll`, `won't`, `Bizee's`, etc.). Use single quotes (`'`) for text without apostrophes.
 5. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`. See formatting guide below.
+6. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 
 See `README-STRUCTURE.md` for complete structure guidelines, `README-LISTS.md` for list handling, and `README-FORMATTING.md` for formatting rules (quotes and links).
 

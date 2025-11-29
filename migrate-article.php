@@ -10,8 +10,10 @@
  * - Use double quotes for text containing apostrophes (contractions)
  * - Use single quotes for text without apostrophes
  * - All links in rich_text must use Bard format with marks and attrs
+ * - Combine consecutive rich_text blocks into one (unless separated by another component)
+ * - Ensure exactly 1 line break (hardBreak) between paragraphs, headings, and lists
  *
- * See README-FORMATTING.md for complete formatting guidelines.
+ * See README-FORMATTING.md and README-STRUCTURE.md for complete formatting guidelines.
  *
  * Usage: php migrate-article.php
  */
@@ -216,6 +218,159 @@ YAML;
         echo "\n\n";
         echo "Note: Use this structure when creating article_button blocks manually.\n";
         echo "Ver articles-migration/README-BUTTONS.md para más detalles.\n";
+    }
+
+    /**
+     * Combines consecutive rich_text blocks into a single block.
+     *
+     * ⚠️ CRITICAL RULE: Consecutive rich_text blocks must be combined unless
+     * separated by another component (button, image, etc.).
+     *
+     * @param array $mainBlocks Array of main_blocks from the article
+     * @return array Array with consecutive rich_text blocks combined
+     */
+    public function combineConsecutiveRichTextBlocks(array $mainBlocks): array
+    {
+        $combined = [];
+        $currentRichText = null;
+        $currentRichTextId = null;
+
+        foreach ($mainBlocks as $block) {
+            // Check if this is a rich_text block
+            if (isset($block['type']) && $block['type'] === 'rich_text') {
+                if ($currentRichText === null) {
+                    // Start a new rich_text block
+                    $currentRichText = $block;
+                    $currentRichTextId = $block['id'] ?? null;
+                } else {
+                    // Combine with current rich_text block
+                    // Add a hardBreak between blocks if needed
+                    if (!empty($currentRichText['content'])) {
+                        $lastItem = end($currentRichText['content']);
+                        // Only add hardBreak if last item is not already a hardBreak
+                        if (!isset($lastItem['type']) || $lastItem['type'] !== 'hardBreak') {
+                            $currentRichText['content'][] = [
+                                'type' => 'paragraph',
+                                'content' => [
+                                    ['type' => 'hardBreak']
+                                ]
+                            ];
+                        }
+                    }
+                    // Merge content from this block into current
+                    if (isset($block['content']) && is_array($block['content'])) {
+                        $currentRichText['content'] = array_merge(
+                            $currentRichText['content'],
+                            $block['content']
+                        );
+                    }
+                }
+            } else {
+                // This is not a rich_text block
+                // If we have a pending rich_text block, add it first
+                if ($currentRichText !== null) {
+                    $combined[] = $currentRichText;
+                    $currentRichText = null;
+                    $currentRichTextId = null;
+                }
+                // Add the non-rich_text block
+                $combined[] = $block;
+            }
+        }
+
+        // Don't forget the last rich_text block if it exists
+        if ($currentRichText !== null) {
+            $combined[] = $currentRichText;
+        }
+
+        return $combined;
+    }
+
+    /**
+     * Ensures proper line breaks between paragraphs, headings, and lists in Bard content.
+     *
+     * Rule: There must be exactly 1 line break (hardBreak) between:
+     * - Headings and paragraphs
+     * - Paragraphs and paragraphs
+     * - Paragraphs and lists
+     * - Lists and paragraphs
+     *
+     * @param array $content Array of Bard content nodes
+     * @return array Array with proper line breaks added
+     */
+    public function ensureProperLineBreaks(array $content): array
+    {
+        if (empty($content)) {
+            return $content;
+        }
+
+        $result = [];
+        $prevType = null;
+
+        foreach ($content as $index => $node) {
+            $currentType = $node['type'] ?? null;
+
+            // Add hardBreak before certain elements if needed
+            if ($prevType !== null) {
+                $needsBreakBefore = false;
+
+                // Add break before paragraph if previous was heading or list
+                if ($currentType === 'paragraph' && ($prevType === 'heading' || $prevType === 'bulletList' || $prevType === 'orderedList')) {
+                    $needsBreakBefore = true;
+                }
+
+                // Add break before list if previous was paragraph or heading
+                if (($currentType === 'bulletList' || $currentType === 'orderedList') && ($prevType === 'paragraph' || $prevType === 'heading')) {
+                    $needsBreakBefore = true;
+                }
+
+                // Add break before heading if previous was list
+                if ($currentType === 'heading' && ($prevType === 'bulletList' || $prevType === 'orderedList')) {
+                    $needsBreakBefore = true;
+                }
+
+                if ($needsBreakBefore) {
+                    // Check if last item is already a hardBreak
+                    $lastItem = end($result);
+                    if (!isset($lastItem['type']) || $lastItem['type'] !== 'hardBreak') {
+                        $result[] = [
+                            'type' => 'paragraph',
+                            'content' => [
+                                ['type' => 'hardBreak']
+                            ]
+                        ];
+                    }
+                }
+            }
+
+            $result[] = $node;
+            $prevType = $currentType;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Processes main_blocks to apply all structure rules:
+     * - Combines consecutive rich_text blocks
+     * - Ensures proper line breaks
+     *
+     * @param array $mainBlocks Array of main_blocks
+     * @return array Processed main_blocks with rules applied
+     */
+    public function processMainBlocks(array $mainBlocks): array
+    {
+        // First, combine consecutive rich_text blocks
+        $combined = $this->combineConsecutiveRichTextBlocks($mainBlocks);
+
+        // Then, ensure proper line breaks in each rich_text block
+        foreach ($combined as &$block) {
+            if (isset($block['type']) && $block['type'] === 'rich_text' && isset($block['content'])) {
+                $block['content'] = $this->ensureProperLineBreaks($block['content']);
+            }
+        }
+
+        return $combined;
     }
 }
 
