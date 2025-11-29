@@ -25,7 +25,9 @@ function formatTextForYaml(string $text): string
     $hasDoubleQuotes = strpos($text, '"') !== false;
 
     if ($hasApostrophes) {
-        // Use double quotes and escape any existing double quotes
+        // Use double quotes as wrapper and escape any existing double quotes
+        // ⚠️ CRITICAL: Do NOT escape single quotes when using double quotes as wrapper
+        // Single quotes inside the text should remain as-is
         return '"' . str_replace('"', '\\"', $text) . '"';
     }
 

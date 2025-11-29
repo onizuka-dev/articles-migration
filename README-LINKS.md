@@ -4,6 +4,8 @@
 
 **Todas las migraciones de artículos DEBEN incluir todos los links del contenido original.** Esto no es opcional. Nunca omitas links del contenido original.
 
+**⚠️ VERIFICACIÓN OBLIGATORIA:** Al final de CADA migración, DEBES revisar el contenido original y comparar con el artículo migrado para asegurar que TODOS los links estén presentes. Esta verificación es parte del checklist principal y NO puede omitirse.
+
 ## ¿Por qué es obligatorio?
 
 1. **Completitud:** Un artículo sin todos sus links está incompleto
@@ -54,13 +56,20 @@ content:
 
 **⚠️ ESTE PASO ES OBLIGATORIO Y DEBE REALIZARSE AL FINAL DE CADA MIGRACIÓN:**
 
-1. **Compara el contenido original con el migrado** - Abre la página de producción y el artículo migrado lado a lado
-2. **Lista todos los links del contenido original** - Crea una lista completa de todos los links visibles en el contenido
-3. **Verifica que cada link esté en el artículo migrado** - Revisa uno por uno que cada link de la lista esté presente
-4. **Verifica que cada link tenga el formato Bard correcto** - Asegúrate de que todos usen `marks` y `attrs`
-5. **Verifica que las URLs sean correctas** - Compara las URLs de producción con las del artículo migrado
+**⚠️ CRÍTICO:** Esta verificación NO puede omitirse. Es parte del checklist principal y DEBE realizarse para CADA migración.
 
-**⚠️ NUNCA omitas este paso. Es parte del checklist principal de migración.**
+**Proceso paso a paso:**
+
+1. **Abre la página de producción en el navegador** - Visita la URL completa del artículo en producción
+2. **Identifica TODOS los links visibles en el contenido principal** - Revisa todo el contenido (no incluyas navegación, footer, etc.)
+3. **Crea una lista completa de todos los links encontrados** - Anota el texto del link y su URL
+4. **Abre el artículo migrado** - Abre el archivo `.md` del artículo migrado
+5. **Compara uno por uno** - Revisa cada link de tu lista y verifica que esté presente en el artículo migrado
+6. **Verifica el formato** - Asegúrate de que cada link use formato Bard con `marks` y `attrs`
+7. **Verifica las URLs** - Compara que las URLs coincidan exactamente con las de producción
+8. **Si falta algún link, agrégalo inmediatamente** - No completes la migración hasta que todos estén presentes
+
+**⚠️ NUNCA omitas este paso. Es parte del checklist principal de migración y es OBLIGATORIO.**
 
 ## ⚠️ CHECKLIST OBLIGATORIO DE LINKS
 
@@ -169,18 +178,22 @@ content:
 
 ## ⚠️ Proceso de Verificación Obligatorio
 
-**Este proceso DEBE realizarse al final de cada migración, como parte del checklist principal.**
+**⚠️ CRÍTICO:** Este proceso DEBE realizarse al final de cada migración, como parte del checklist principal. **NO puede omitirse ni saltarse.**
 
 ### Método 1: Comparación Manual (Recomendado)
 
-1. **Abre el contenido original en el navegador** - Visita la URL de producción
-2. **Identifica todos los links visibles** - Revisa todo el contenido principal (no incluyas navegación, footer, etc.)
-3. **Crea una lista de todos los links encontrados** - Anota el texto del link y su URL
-4. **Revisa el artículo migrado y marca cada link como verificado** - Compara uno por uno
-5. **Si falta algún link, agrégalo inmediatamente** - No completes la migración hasta que todos estén presentes
-6. **Verifica que las URLs sean correctas** - Compara las URLs de producción con las del artículo migrado
+**⚠️ ESTE MÉTODO ES OBLIGATORIO Y DEBE REALIZARSE PARA CADA MIGRACIÓN:**
 
-**⚠️ Este paso es OBLIGATORIO y forma parte del checklist principal de migración.**
+1. **Abre el contenido original en el navegador** - Visita la URL completa de producción (ej: `https://bizee.com/articles/[slug]`)
+2. **Identifica todos los links visibles** - Revisa TODO el contenido principal (no incluyas navegación, footer, sidebar, etc.)
+3. **Crea una lista completa de todos los links encontrados** - Anota el texto del link y su URL exacta
+4. **Abre el artículo migrado** - Abre el archivo `.md` del artículo migrado
+5. **Compara uno por uno** - Revisa cada link de tu lista y verifica que esté presente en el artículo migrado
+6. **Verifica el formato** - Asegúrate de que cada link use formato Bard con `marks` y `attrs`
+7. **Verifica las URLs** - Compara que las URLs coincidan exactamente con las de producción
+8. **Si falta algún link, agrégalo inmediatamente** - No completes la migración hasta que todos estén presentes
+
+**⚠️ Este paso es OBLIGATORIO y forma parte del checklist principal de migración. NO puede omitirse.**
 
 ### Método 2: Búsqueda en el Código
 

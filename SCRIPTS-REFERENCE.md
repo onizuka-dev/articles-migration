@@ -6,8 +6,8 @@ This guide documents all available scripts and their parameters.
 
 Before using any migration scripts, ensure you follow these formatting rules:
 
-1. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions). Use single quotes (`'`) for text without apostrophes. **CRITICAL:** If a double-quoted string contains double quotes inside (like quoted words), escape them with `\"`. If text has double quotes but no apostrophes, prefer single quotes for the outer string. The `formatTextForYaml()` function in `formatting-helper.php` handles this automatically.
-2. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`.
+1. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions). Use single quotes (`'`) for text without apostrophes. **CRITICAL:** If a double-quoted string contains double quotes inside (like quoted words), escape them with `\"`. **⚠️ CRITICAL:** When using double quotes as wrapper, do NOT escape single quotes inside the text - leave them as-is. If text has double quotes but no apostrophes, prefer single quotes for the outer string. The `formatTextForYaml()` function in `formatting-helper.php` handles this automatically.
+2. **Links:** ⚠️ **MANDATORY** - All links in `rich_text` content must use Bard format with `marks` and `attrs`. **⚠️ CRITICAL:** A final link verification MUST be performed at the end of each migration by comparing the production page with the migrated article. **This verification CANNOT be skipped.** See `README-LINKS.md` for complete guidelines.
 3. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
 4. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 5. **SEO Fields:** ⚠️ **MANDATORY** - All migrated articles MUST include SEO fields in the frontmatter. These fields must be extracted from the production page. See `README-SEO.md` for complete guidelines.
@@ -228,6 +228,7 @@ php migrate-article.php
    - Automatically formats text with correct quotes for YAML
    - Uses double quotes (`"`) if text contains apostrophes
    - Escapes double quotes inside double-quoted strings with `\"`
+   - ⚠️ **CRITICAL:** Does NOT escape single quotes when using double quotes as wrapper (single quotes inside text remain as-is)
    - Uses single quotes (`'`) if text has double quotes but no apostrophes
    - **Always use this function when generating text nodes**
 
@@ -243,9 +244,15 @@ $text1 = formatTextForYaml("Here's what you'll get");
 $text2 = formatTextForYaml('The keyword "food" or "health food"');
 // Result: 'The keyword "food" or "health food"'
 
-// Text with both → uses double quotes and escapes internal quotes
+// Text with both → uses double quotes, escapes double quotes but NOT single quotes
 $text3 = formatTextForYaml('So although "need" may be a strong word, Let\'s check');
 // Result: "So although \"need\" may be a strong word, Let's check"
+// Note: Single quotes inside are NOT escaped when using double quotes as wrapper
+
+// Example with single quotes inside text
+$text4 = formatTextForYaml("There is no 'official' way to have a company's code changed");
+// Result: "There is no 'official' way to have a company's code changed"
+// Note: Single quotes remain as-is, only double quotes are escaped
 ```
 
 **SEO Helper Functions (from `migrate-article.php`):**

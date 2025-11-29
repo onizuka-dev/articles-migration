@@ -33,13 +33,18 @@ El script genera una estructura base. Debes:
 
 Antes de considerar la migración completa:
 
-- [ ] ⚠️ **OBLIGATORIO:** ¿Revisaste que TODOS los links del contenido original están incluidos en formato Bard? (Esta verificación DEBE hacerse al final de cada migración)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Revisaste que TODOS los links del contenido original están incluidos en formato Bard?
+  - **PASO 1:** Abre la página de producción en el navegador
+  - **PASO 2:** Identifica TODOS los links visibles en el contenido principal
+  - **PASO 3:** Compara uno por uno con el artículo migrado
+  - **PASO 4:** Si falta algún link, agrégalo inmediatamente
+  - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN - NO PUEDE OMITIRSE**
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
 - [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
 - [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?
 - [ ] ¿El `seo_custom_meta_description` es la meta description exacta de producción?
-- [ ] ¿Las comillas están correctas? (dobles `"` para texto con apostrofes, simples `'` para el resto; escapar comillas dobles internas con `\"`)
+- [ ] ¿Las comillas están correctas? (dobles `"` para texto con apostrofes, simples `'` para el resto; escapar comillas dobles internas con `\"`; ⚠️ **NO escapar comillas simples cuando usas comillas dobles como wrapper**)
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?
 - [ ] ¿Solo el primer párrafo está en `intro`?
@@ -129,6 +134,7 @@ content:
 
 - **Quotes:**
   - Dobles (`"`) para texto con apostrofes (escapar comillas dobles internas con `\"`)
+  - ⚠️ **CRÍTICO:** Cuando usas comillas dobles como wrapper, **NO escapar comillas simples** dentro del texto - dejarlas tal cual
   - Simples (`'`) para texto sin apostrofes
   - Si hay comillas dobles pero NO apostrofes, preferir comillas simples para el string externo
 - **Line breaks:** Exactamente 1 `hardBreak` entre párrafos, headings y listas

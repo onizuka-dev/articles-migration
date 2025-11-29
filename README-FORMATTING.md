@@ -29,10 +29,26 @@ text: "The keyword \"food\" or \"health food\""
 text: 'The keyword "food" or "health food"'
 ```
 
+**Regla Crítica: NO Escapar Comillas Simples Dentro de Strings con Comillas Dobles**
+
+**⚠️ IMPORTANTE:** Cuando un string usa comillas dobles (`"`) como wrapper porque contiene apostrofes, **NO debes escapar las comillas simples** dentro del texto. Las comillas simples dentro del texto deben dejarse tal cual.
+
+**Ejemplos:**
+
+**❌ Incorrecto (escapando comillas simples innecesariamente):**
+```yaml
+text: 'There is no \'official\' way to have a company\'s SIC code changed'
+```
+
+**✅ Correcto (usar comillas dobles y NO escapar comillas simples):**
+```yaml
+text: "There is no 'official' way to have a company's SIC code changed"
+```
+
 **Regla de Decisión:**
-1. Si el texto contiene apostrofes → usar comillas dobles (`"`) y escapar comillas dobles internas con `\"`
-2. Si el texto contiene comillas dobles pero NO apostrofes → preferir comillas simples (`'`) para el string externo
-3. Si el texto contiene ambos (apostrofes Y comillas dobles) → usar comillas dobles (`"`) y escapar las comillas dobles internas con `\"`
+1. Si el texto contiene apostrofes → usar comillas dobles (`"`) como wrapper y **NO escapar las comillas simples** dentro del texto. Solo escapar comillas dobles internas con `\"`.
+2. Si el texto contiene comillas dobles pero NO apostrofes → preferir comillas simples (`'`) para el string externo y escapar comillas simples internas con `''`.
+3. Si el texto contiene ambos (apostrofes Y comillas dobles) → usar comillas dobles (`"`) como wrapper, **NO escapar comillas simples**, y escapar solo las comillas dobles internas con `\"`.
 
 **⚠️ IMPORTANTE:** Los scripts de migración (`formatting-helper.php`) aplican estas reglas automáticamente. Si migras manualmente, asegúrate de seguir estas reglas o usar la función `formatTextForYaml()`.
 
@@ -64,10 +80,11 @@ text: 'Selecting your business entity type'
 
 ### Checklist
 
-- [ ] ¿El texto contiene apostrofes? → Usar comillas dobles (`"`) y escapar comillas dobles internas con `\"`
-- [ ] ¿El texto contiene comillas dobles pero NO apostrofes? → Usar comillas simples (`'`) para el string externo
+- [ ] ¿El texto contiene apostrofes? → Usar comillas dobles (`"`) como wrapper y **NO escapar las comillas simples** dentro del texto. Solo escapar comillas dobles internas con `\"`.
+- [ ] ¿El texto contiene comillas dobles pero NO apostrofes? → Usar comillas simples (`'`) para el string externo y escapar comillas simples internas con `''`.
 - [ ] ¿El texto NO contiene apostrofes ni comillas dobles? → Puedes usar comillas simples (`'`)
 - [ ] ¿Verificaste que las comillas dobles dentro de strings con comillas dobles estén escapadas?
+- [ ] ⚠️ **CRÍTICO:** ¿Verificaste que NO estés escapando comillas simples cuando usas comillas dobles como wrapper?
 
 ## 2. Formato de Links en Rich Text (Bard)
 
