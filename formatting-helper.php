@@ -11,6 +11,7 @@
 /**
  * Escapes and formats text for YAML output.
  * Uses double quotes if text contains apostrophes, single quotes otherwise.
+ * Properly escapes double quotes within double-quoted strings.
  *
  * @param string $text The text to format
  * @return string Formatted text ready for YAML output
@@ -18,9 +19,21 @@
 function formatTextForYaml(string $text): string
 {
     // Check if text contains apostrophes (contractions)
-    if (preg_match("/['']/", $text)) {
+    $hasApostrophes = preg_match("/['']/", $text);
+
+    // Check if text contains double quotes
+    $hasDoubleQuotes = strpos($text, '"') !== false;
+
+    if ($hasApostrophes) {
         // Use double quotes and escape any existing double quotes
         return '"' . str_replace('"', '\\"', $text) . '"';
+    }
+
+    // If text has double quotes but no apostrophes, prefer single quotes
+    // to avoid needing to escape the double quotes
+    if ($hasDoubleQuotes) {
+        // Use single quotes and escape any existing single quotes
+        return "'" . str_replace("'", "''", $text) . "'";
     }
 
     // Use single quotes and escape any existing single quotes

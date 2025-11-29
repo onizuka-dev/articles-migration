@@ -13,6 +13,10 @@
 
 ## Proceso Obligatorio de Imágenes
 
+### ⚠️ REGLA CRÍTICA: Las Imágenes DEBEN Estar en S3, NO Localmente
+
+**NUNCA** guardes imágenes localmente en `public/assets/` de forma permanente. **SIEMPRE** deben estar en S3 con rutas `articles/featured/` o `articles/main-content/`.
+
 ### Paso 1: Descargar y Subir Imágenes a S3
 
 **SIEMPRE** ejecuta este script después de crear el archivo del artículo:
@@ -25,18 +29,43 @@ php download-and-upload-images-to-s3.php \
 
 Este script:
 - Descarga las imágenes del artículo original
-- Las sube directamente a S3
+- Las sube **directamente a S3** (no las guarda localmente de forma permanente)
 - Genera un mapeo de URLs originales → rutas S3
-- No guarda imágenes localmente (solo temporalmente)
+- Las imágenes solo se guardan temporalmente durante el proceso de subida
 
-### Paso 2: Actualizar el Artículo con Rutas de Imágenes
+**❌ INCORRECTO:**
+```bash
+# NO hacer esto manualmente
+curl -o public/assets/articles/featured/image.webp https://...
+# Esto guarda la imagen localmente, lo cual NO queremos
+```
 
-Después de ejecutar el script, DEBES actualizar el artículo:
+**✅ CORRECTO:**
+```bash
+# Usar el script que sube directamente a S3
+php download-and-upload-images-to-s3.php \
+  https://bizee.com/articles/[slug] \
+  [slug]
+```
+
+### Paso 2: Actualizar el Artículo con Rutas de Imágenes de S3
+
+Después de ejecutar el script, DEBES actualizar el artículo con las rutas de S3:
+
+#### ⚠️ IMPORTANTE: Usar Rutas de S3, NO URLs Locales
+
+**Las rutas deben ser relativas a S3:**
+- `articles/featured/[slug].webp` ✅
+- `articles/main-content/[slug]-[description].webp` ✅
+
+**NO usar:**
+- URLs completas de S3 ❌
+- Rutas locales como `public/assets/...` ❌
+- URLs del sitio original ❌
 
 #### Imagen Destacada (Featured Image)
 
-Actualiza el campo `featured_image` en el frontmatter:
-
+Actualiza el campo `featured_image` en el frontmatter con la ruta de S3:
 ```yaml
 featured_image: articles/featured/[slug].webp
 ```
@@ -45,6 +74,8 @@ Ejemplo:
 ```yaml
 featured_image: articles/featured/can-a-minor-own-a-business.webp
 ```
+
+**NOTA:** Esta ruta apunta directamente a S3. El sistema Statamic resolverá automáticamente la URL completa de S3.
 
 #### Imágenes del Contenido (Content Images)
 
@@ -56,7 +87,7 @@ main_blocks:
   -
     id: [unique-id]
     version: article_image_1
-    image: articles/main-content/[slug]-[description].webp
+    image: articles/main-content/[slug]-[description].webp  # Ruta de S3
     type: article_image
     enabled: true
   # ... otros bloques ...
@@ -71,6 +102,8 @@ Ejemplo:
     type: article_image
     enabled: true
 ```
+
+**NOTA:** La ruta `articles/main-content/...` apunta directamente a S3. No uses rutas locales.
 
 ### Paso 3: Verificar Imágenes en S3
 
@@ -104,17 +137,48 @@ Ejemplos:
 
 ## Errores Comunes
 
-### ❌ Error: Olvidar procesar imágenes
-**Solución:** Siempre ejecuta `download-and-upload-images-to-s3.php` como parte del proceso de migración.
+### ❌ Error: Guardar imágenes localmente en lugar de S3
+**Solución:** **NUNCA** guardes imágenes en `public/assets/` localmente. **SIEMPRE** usa el script `download-and-upload-images-to-s3.php` que las sube directamente a S3.
 
-### ❌ Error: Usar URLs originales en lugar de rutas S3
-**Solución:** Usa siempre rutas relativas como `articles/featured/[slug].webp`, nunca URLs completas.
+**Ejemplo de error:**
+```bash
+# ❌ INCORRECTO - No hacer esto
+curl -o public/assets/articles/featured/image.webp https://...
+```
+
+**Solución correcta:**
+```bash
+# ✅ CORRECTO
+php download-and-upload-images-to-s3.php \
+  https://bizee.com/articles/[slug] \
+  [slug]
+```
+
+### ❌ Error: Olvidar procesar imágenes
+**Solución:** Siempre ejecuta `download-and-upload-images-to-s3.php` como parte del proceso de migración. Este paso es **OBLIGATORIO**.
+
+### ❌ Error: Usar URLs originales o rutas locales en lugar de rutas S3
+**Solución:** Usa siempre rutas relativas de S3 como `articles/featured/[slug].webp` o `articles/main-content/[slug]-[desc].webp`. Nunca uses URLs completas ni rutas locales.
+
+**Ejemplos incorrectos:**
+```yaml
+# ❌ INCORRECTO
+featured_image: https://s3.amazonaws.com/...
+featured_image: public/assets/articles/featured/...
+featured_image: /assets/articles/featured/...
+```
+
+**Ejemplo correcto:**
+```yaml
+# ✅ CORRECTO
+featured_image: articles/featured/[slug].webp
+```
 
 ### ❌ Error: No agregar bloques `article_image` para imágenes del contenido
-**Solución:** Cada imagen del contenido debe tener su propio bloque `article_image` en `main_blocks`.
+**Solución:** Cada imagen del contenido debe tener su propio bloque `article_image` en `main_blocks` con la ruta de S3.
 
 ### ❌ Error: Dejar `featured_image` vacío
-**Solución:** Si el artículo tiene una imagen destacada, siempre debe estar configurada en `featured_image`.
+**Solución:** Si el artículo tiene una imagen destacada, siempre debe estar configurada en `featured_image` con la ruta de S3.
 
 ## Integración con Scripts de Migración
 

@@ -8,6 +8,34 @@ Este documento describe las reglas generales de formato que deben seguirse al mi
 
 **Regla General:** Si el texto contiene apostrofes (contracciones como `you'll`, `won't`, `Bizee's`, `you're`, etc.), el string debe usar **comillas dobles** (`"`). Si el texto no contiene apostrofes, se pueden usar comillas simples (`'`).
 
+### Regla: Escapar Comillas Dobles Dentro de Strings con Comillas Dobles
+
+**Regla Crítica:** Si un string usa comillas dobles (`"`) y contiene comillas dobles dentro del texto (como palabras entre comillas), estas comillas internas **DEBEN** ser escapadas usando `\"`.
+
+**Ejemplos:**
+
+**❌ Incorrecto (comillas dobles sin escapar):**
+```yaml
+text: "The keyword "food" or "health food""
+```
+
+**✅ Correcto (comillas dobles escapadas):**
+```yaml
+text: "The keyword \"food\" or \"health food\""
+```
+
+**✅ También Correcto (usar comillas simples para el string externo):**
+```yaml
+text: 'The keyword "food" or "health food"'
+```
+
+**Regla de Decisión:**
+1. Si el texto contiene apostrofes → usar comillas dobles (`"`) y escapar comillas dobles internas con `\"`
+2. Si el texto contiene comillas dobles pero NO apostrofes → preferir comillas simples (`'`) para el string externo
+3. Si el texto contiene ambos (apostrofes Y comillas dobles) → usar comillas dobles (`"`) y escapar las comillas dobles internas con `\"`
+
+**⚠️ IMPORTANTE:** Los scripts de migración (`formatting-helper.php`) aplican estas reglas automáticamente. Si migras manualmente, asegúrate de seguir estas reglas o usar la función `formatTextForYaml()`.
+
 ### Ejemplos
 
 **❌ Incorrecto:**
@@ -36,8 +64,10 @@ text: 'Selecting your business entity type'
 
 ### Checklist
 
-- [ ] ¿El texto contiene apostrofes? → Usar comillas dobles (`"`)
-- [ ] ¿El texto NO contiene apostrofes? → Puedes usar comillas simples (`'`)
+- [ ] ¿El texto contiene apostrofes? → Usar comillas dobles (`"`) y escapar comillas dobles internas con `\"`
+- [ ] ¿El texto contiene comillas dobles pero NO apostrofes? → Usar comillas simples (`'`) para el string externo
+- [ ] ¿El texto NO contiene apostrofes ni comillas dobles? → Puedes usar comillas simples (`'`)
+- [ ] ¿Verificaste que las comillas dobles dentro de strings con comillas dobles estén escapadas?
 
 ## 2. Formato de Links en Rich Text (Bard)
 

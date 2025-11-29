@@ -6,7 +6,7 @@ This guide documents all available scripts and their parameters.
 
 Before using any migration scripts, ensure you follow these formatting rules:
 
-1. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions). Use single quotes (`'`) for text without apostrophes.
+1. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions). Use single quotes (`'`) for text without apostrophes. **CRITICAL:** If a double-quoted string contains double quotes inside (like quoted words), escape them with `\"`. If text has double quotes but no apostrophes, prefer single quotes for the outer string. The `formatTextForYaml()` function in `formatting-helper.php` handles this automatically.
 2. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`.
 3. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
 4. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
@@ -220,6 +220,32 @@ php migrate-article.php
      - Combines consecutive `rich_text` blocks
      - Ensures proper line breaks
    - **Use this function to process main_blocks before finalizing migration**
+
+**Formatting Helper Functions (from `formatting-helper.php`):**
+
+5. **`formatTextForYaml($text)`** ⚠️ CRITICAL
+   - Automatically formats text with correct quotes for YAML
+   - Uses double quotes (`"`) if text contains apostrophes
+   - Escapes double quotes inside double-quoted strings with `\"`
+   - Uses single quotes (`'`) if text has double quotes but no apostrophes
+   - **Always use this function when generating text nodes**
+
+**Example:**
+```php
+require_once 'formatting-helper.php';
+
+// Text with apostrophes → uses double quotes
+$text1 = formatTextForYaml("Here's what you'll get");
+// Result: "Here's what you'll get"
+
+// Text with double quotes but no apostrophes → uses single quotes
+$text2 = formatTextForYaml('The keyword "food" or "health food"');
+// Result: 'The keyword "food" or "health food"'
+
+// Text with both → uses double quotes and escapes internal quotes
+$text3 = formatTextForYaml('So although "need" may be a strong word, Let\'s check');
+// Result: "So although \"need\" may be a strong word, Let's check"
+```
 
 **Usage Example:**
 ```php

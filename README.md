@@ -2,6 +2,16 @@
 
 This directory contains scripts and documentation for migrating articles to the Statamic content system.
 
+## 🚀 Quick Start
+
+**Para empezar rápidamente, lee primero:** [`QUICK-START.md`](./QUICK-START.md)
+
+Este es el entry point principal que contiene:
+- Proceso rápido de migración (3 pasos)
+- Reglas críticas que nunca olvidar
+- Referencias a toda la documentación
+- Solución de problemas comunes
+
 ## ⚠️ Important Rules
 
 Before migrating, ensure you follow these structure and formatting rules:
@@ -9,13 +19,20 @@ Before migrating, ensure you follow these structure and formatting rules:
 1. **Intro:** Only the first paragraph goes in `intro`. All remaining content goes in `main_blocks`.
 2. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.). This rule must be applied automatically during migration.
 3. **Lists:** All lists (including numbered lists) should be migrated as `bulletList`.
-4. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions like `you'll`, `won't`, `Bizee's`, etc.). Use single quotes (`'`) for text without apostrophes.
+4. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions like `you'll`, `won't`, `Bizee's`, etc.). Use single quotes (`'`) for text without apostrophes. **CRITICAL:** If a double-quoted string contains double quotes inside (like quoted words), escape them with `\"`. If text has double quotes but no apostrophes, prefer single quotes for the outer string.
 5. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`. See formatting guide below.
 6. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
-7. **Images:** ⚠️ **MANDATORY** - All images MUST be downloaded and uploaded to S3, and referenced correctly in the article. This includes both `featured_image` and `article_image` blocks. **Never skip this step.**
+7. **Images:** ⚠️ **MANDATORY** - All images MUST be downloaded and uploaded to S3, and referenced correctly in the article. This includes both `featured_image` and `article_image` blocks. **Never skip this step.** ⚠️ **CRITICAL:** Images must be in S3, NOT stored locally. Always use `download-and-upload-images-to-s3.php` which uploads directly to S3. Never save images in `public/assets/` locally.
 8. **Links:** ⚠️ **MANDATORY** - All links from the original content MUST be included in the migrated article using Bard format with `marks` and `attrs`. **Always verify that no links are missing.** Links must be properly formatted with correct `href`, `rel`, `target`, and `title` attributes.
 
-See `README-STRUCTURE.md` for complete structure guidelines, `README-LISTS.md` for list handling, `README-FORMATTING.md` for formatting rules (quotes and links), `README-IMAGES.md` for mandatory image processing rules, and `README-LINKS.md` for mandatory link verification rules.
+**📚 Documentación Completa:**
+- **`QUICK-START.md`** - 🚀 Entry point principal (empieza aquí)
+- **`README-STRUCTURE.md`** - Reglas de estructura de contenido
+- **`README-LISTS.md`** - Manejo de listas
+- **`README-FORMATTING.md`** - Reglas de formato (quotes, links, line breaks)
+- **`README-IMAGES.md`** - ⚠️ **CRÍTICO:** Procesamiento obligatorio de imágenes (deben estar en S3, NO localmente)
+- **`README-LINKS.md`** - ⚠️ **CRÍTICO:** Verificación obligatoria de links
+- **`SCRIPTS-REFERENCE.md`** - Referencia de todos los scripts
 
 ## Article Structure
 
@@ -226,9 +243,11 @@ Embedded video.
 
 4. **Process images** ⚠️ **MANDATORY STEP**
    - **ALWAYS** download and upload images to S3 using `download-and-upload-images-to-s3.php`
-   - Update `featured_image` field with the correct S3 path
-   - Add `article_image` blocks for content images with correct S3 paths
+   - ⚠️ **CRITICAL:** This script uploads images **directly to S3**. Never save images locally in `public/assets/`
+   - Update `featured_image` field with the correct S3 path (`articles/featured/[slug].webp`)
+   - Add `article_image` blocks for content images with correct S3 paths (`articles/main-content/[slug]-[desc].webp`)
    - **This step MUST be done for every migration, no exceptions**
+   - **Never use local paths or URLs - always use S3 paths**
 
 5. **Add metadata**
    - Assign author(s)
