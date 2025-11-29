@@ -8,6 +8,13 @@
  * - Adds new path to released-articles.php
  * - Adds redirects from old path to new in redirects.php
  *
+ * IMPORTANT: Before running this script, ensure your article follows these structure rules:
+ * - Only the first paragraph should be in `intro`
+ * - All remaining content should be in `main_blocks`
+ * - Consecutive `rich_text` blocks should be combined into one, unless separated by another component
+ *
+ * See README-STRUCTURE.md for complete structure guidelines.
+ *
  * Usage: php verify-and-fix-article.php [ARTICLE_FILE_PATH] [CATEGORY_SLUG] [OLD_URL]
  * Example: php verify-and-fix-article.php ../content/collections/articles/2020-12-15.why-a-series-llc-is-the-best-for-your-real-estate-investment-business.md business-formation /articles/why-a-series-llc-is-the-best-for-your-real-estate-investment-business
  */

@@ -2,6 +2,16 @@
 
 This directory contains scripts and documentation for migrating articles to the Statamic content system.
 
+## ⚠️ Important Rules
+
+Before migrating, ensure you follow these structure rules:
+
+1. **Intro:** Only the first paragraph goes in `intro`. All remaining content goes in `main_blocks`.
+2. **Rich Text Blocks:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
+3. **Lists:** All lists (including numbered lists) should be migrated as `bulletList`.
+
+See `README-STRUCTURE.md` for complete structure guidelines and `README-LISTS.md` for list handling.
+
 ## Article Structure
 
 Articles are stored in `content/collections/articles/` with the filename format:
@@ -130,6 +140,27 @@ content:
                   -
                     type: bold
                 text: 'Bold text'
+  -
+    type: bulletList
+    content:
+      -
+        type: listItem
+        content:
+          -
+            type: paragraph
+            content:
+              -
+                type: text
+                text: 'First item'
+      -
+        type: listItem
+        content:
+          -
+            type: paragraph
+            content:
+              -
+                type: text
+                text: 'Second item'
 ```
 
 ## Available Block Types
@@ -182,8 +213,9 @@ Embedded video.
 3. **Structure content**
    - Convert HTML/plain text to Bard format
    - Create appropriate blocks (rich_text, article_image, etc.)
-   - Add intro in Bard format
-   - Organize content in main_blocks
+   - **IMPORTANT:** Only the first paragraph goes in `intro`
+   - All remaining content goes in `main_blocks`
+   - **IMPORTANT:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.)
 
 4. **Add metadata**
    - Assign author(s)
@@ -200,6 +232,7 @@ Embedded video.
 
 - `migrate-article.php`: Base script to generate article structure (template)
 - `button-helper.php`: Helper to generate `article_button` blocks with standard format (no bold, left-aligned)
+- `list-helper.php`: Helper to generate `bulletList` blocks (all lists should be bulletList, even if numbered in HTML)
 - `upload-images-to-s3.php`: Script to upload local images to S3
 - `download-images-improved.py`: Improved script to download content images
 - `migrate-urls.php`: Script to analyze and migrate URLs
@@ -222,6 +255,35 @@ $button = generateArticleButton(
 
 See `README-BUTTONS.md` for more details.
 
+### List Types
+
+**IMPORTANT:** All lists (including numbered lists from HTML) should be migrated as `bulletList`. This is the project standard.
+
+See `README-LISTS.md` for details and use `list-helper.php` for generating lists.
+
+### Article Structure
+
+**IMPORTANT Rules:**
+- Only the first paragraph goes in `intro`
+- All remaining content goes in `main_blocks`
+- Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.)
+
+See `README-STRUCTURE.md` for complete structure guidelines.
+
+## List Types
+
+### bulletList (Lista con viñetas) ✅ USAR SIEMPRE
+Use `bulletList` for **all lists**, including numbered lists from HTML:
+- Features
+- Benefits
+- Options
+- Steps in a process
+- Instructions
+- Sequential items
+- **Any list, regardless of whether it was numbered in HTML**
+
+**IMPORTANT:** All lists should be migrated as `bulletList`, even if they were numbered (`<ol>`) in the original HTML.
+
 ## Important Notes
 
 - UUIDs must be unique for each article
@@ -229,3 +291,4 @@ See `README-BUTTONS.md` for more details.
 - Bard format is sensitive to YAML indentation
 - Blocks must have unique IDs within the article
 - Each block must have `enabled: true` to be visible
+- **Always use `bulletList` for all lists, even if they were numbered in HTML**

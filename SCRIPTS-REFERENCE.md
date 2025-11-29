@@ -7,6 +7,13 @@ This guide documents all available scripts and their parameters.
 ### 1. `verify-and-fix-article.php`
 **Purpose:** Verifies and fixes migrated articles (buttons, images, category, URLs and redirects)
 
+**IMPORTANT:** Before running this script, ensure your article follows these structure rules:
+- Only the first paragraph should be in `intro`
+- All remaining content should be in `main_blocks`
+- Consecutive `rich_text` blocks should be combined into one, unless separated by another component
+
+See `README-STRUCTURE.md` for complete structure guidelines.
+
 **Parameters:**
 ```bash
 php verify-and-fix-article.php [ARTICLE_FILE_PATH] [CATEGORY_SLUG] [OLD_URL]
