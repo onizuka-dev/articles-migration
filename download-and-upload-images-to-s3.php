@@ -117,11 +117,41 @@ class DirectS3ImageUploader
                     continue;
                 }
 
-                // Search for images in this line
+                // Search for images with src attribute
                 if (preg_match_all('/<img[^>]+(?:src|data-src)=["\']([^"\']+)["\'][^>]*>/i', $line, $matches)) {
                     foreach ($matches[1] as $url) {
                         if ($this->isContentImage($url, $line)) {
                             $images[] = $url;
+                        }
+                    }
+                }
+                
+                // Search for srcSet attribute separately (Next.js images)
+                if (preg_match_all('/srcSet=["\']([^"\']+)["\']/i', $line, $srcSetMatches)) {
+                    foreach ($srcSetMatches[1] as $srcSet) {
+                        // Extract URLs from srcSet format: "url1 1x, url2 2x"
+                        // Also handle Next.js format: "/_next/image?url=ENCODED_URL&w=750&q=75"
+                        // Match both absolute URLs and Next.js relative URLs
+                        preg_match_all('/(https?:\/\/[^\s,]+|\/_next\/image\?[^\s,]+)/', $srcSet, $srcSetUrls);
+                        foreach ($srcSetUrls[1] as $srcSetUrl) {
+                            // Normalize Next.js image URL to extract the actual image URL
+                            $normalizedUrl = $this->normalizeUrl($srcSetUrl);
+                            if ($this->isContentImage($normalizedUrl, $line)) {
+                                $images[] = $normalizedUrl;
+                            }
+                        }
+                    }
+                }
+                
+                // Also check for imageSrcSet (used in preload links)
+                if (preg_match_all('/imageSrcSet=["\']([^"\']+)["\']/i', $line, $imageSrcSetMatches)) {
+                    foreach ($imageSrcSetMatches[1] as $srcSet) {
+                        preg_match_all('/(https?:\/\/[^\s,]+|\/_next\/image\?[^\s,]+)/', $srcSet, $srcSetUrls);
+                        foreach ($srcSetUrls[1] as $srcSetUrl) {
+                            $normalizedUrl = $this->normalizeUrl($srcSetUrl);
+                            if ($this->isContentImage($normalizedUrl, $line)) {
+                                $images[] = $normalizedUrl;
+                            }
                         }
                     }
                 }
@@ -199,15 +229,34 @@ class DirectS3ImageUploader
             }
         }
 
-        // Include only images that appear to be from the actual article content
+        // Include images that appear to be from the actual article content
         $contentPatterns = [
             'teenager', 'headphones', 'map', 'infographic',
             'states', 'minor', 'business', 'entrepreneur',
+            'blog_top-image', 'location', 'physical', 'address',
+            'virtual', 'mailbox', 'nomad', 'relocating',
         ];
 
         // If it has article-specific content patterns, include it
         foreach ($contentPatterns as $pattern) {
             if (strpos($urlLower, $pattern) !== false) {
+                return true;
+            }
+        }
+
+        // Also include if it's from S3 bizee-website-assets and is a large image (likely content)
+        if (strpos($urlLower, 's3.us-east-2.amazonaws.com/bizee-website-assets') !== false) {
+            // Check if it's a large image (not a thumbnail)
+            if (strpos($url, '/_next/image') !== false) {
+                // Check width parameter - include if w >= 750 (content images are usually larger)
+                if (preg_match('/w=(\d+)/', $url, $widthMatch)) {
+                    $width = (int)$widthMatch[1];
+                    if ($width >= 750) {
+                        return true;
+                    }
+                }
+            } else {
+                // Direct S3 URL, likely content image
                 return true;
             }
         }
@@ -229,6 +278,10 @@ class DirectS3ImageUploader
                 parse_str($parsed['query'], $params);
                 if (isset($params['url'])) {
                     $url = urldecode($params['url']);
+                    // Handle URL-encoded URLs
+                    if (strpos($url, '%') !== false) {
+                        $url = urldecode($url);
+                    }
                     if (substr($url, 0, 4) !== 'http') {
                         $url = 'https://bizee.com' . $url;
                     }

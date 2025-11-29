@@ -25,6 +25,7 @@ Este script automatiza TODO:
 El script genera una estructura base. Debes:
 - Revisar el contenido generado
 - Verificar que todos los links estén en formato Bard
+- Verificar que todos los videos de Wistia estén incluidos como bloques `video`
 - Asegurar que las imágenes estén correctamente referenciadas
 - Completar cualquier contenido faltante
 
@@ -34,7 +35,9 @@ Antes de considerar la migración completa:
 
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
 - [ ] ¿Todos los links del contenido original están incluidos en formato Bard?
-- [ ] ¿El formato es correcto (quotes, line breaks, etc.)?
+- [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
+- [ ] ¿Las comillas están correctas? (dobles `"` para texto con apostrofes, simples `'` para el resto; escapar comillas dobles internas con `\"`)
+- [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?
 - [ ] ¿Solo el primer párrafo está en `intro`?
 
@@ -53,6 +56,7 @@ Antes de considerar la migración completa:
 - **`README-FORMATTING.md`** - Reglas de formato (quotes, links, line breaks)
 - **`README-IMAGES.md`** - ⚠️ **CRÍTICO:** Procesamiento obligatorio de imágenes
 - **`README-LINKS.md`** - ⚠️ **CRÍTICO:** Verificación obligatoria de links
+- **`README-VIDEOS.md`** - ⚠️ **CRÍTICO:** Migración obligatoria de videos con Wistia
 
 ## ⚠️ Reglas Críticas (NUNCA Olvidar)
 
@@ -74,7 +78,24 @@ php download-and-upload-images-to-s3.php \
 **❌ INCORRECTO:** Guardar imágenes en `public/assets/` localmente
 **✅ CORRECTO:** Subir a S3 y usar rutas `articles/featured/` o `articles/main-content/`
 
-### 2. Links: OBLIGATORIO Verificar Todos
+### 2. Videos: OBLIGATORIO Incluir Todos
+
+**SIEMPRE** verificar que todos los videos de Wistia del contenido original estén incluidos como bloques `video`:
+
+```yaml
+main_blocks:
+  -
+    id: [unique-id]
+    version: article_video_1
+    video_url: 'https://incfile.wistia.com/medias/[VIDEO_ID]'
+    show_video_object: false
+    type: video
+    enabled: true
+```
+
+**⚠️ IMPORTANTE:** Usa el formato `https://incfile.wistia.com/medias/[VIDEO_ID]`, no el formato de embed.
+
+### 3. Links: OBLIGATORIO Verificar Todos
 
 **SIEMPRE** verificar que todos los links del contenido original estén incluidos en formato Bard:
 
@@ -100,7 +121,7 @@ content:
     text: ' texto después.'
 ```
 
-### 3. Formato: Reglas Estrictas
+### 4. Formato: Reglas Estrictas
 
 - **Quotes:**
   - Dobles (`"`) para texto con apostrofes (escapar comillas dobles internas con `\"`)
@@ -119,15 +140,17 @@ content:
    ↓
 3. Verificar imágenes en S3 (si migrate-complete.php no las procesó)
    ↓
-4. Verificar todos los links están en formato Bard
+4. Verificar todos los videos de Wistia están incluidos como bloques `video`
    ↓
-5. Aplicar formato correcto (quotes, line breaks)
+5. Verificar todos los links están en formato Bard
    ↓
-6. Combinar bloques rich_text consecutivos
+6. Aplicar formato correcto (quotes, line breaks)
    ↓
-7. Checklist final
+7. Combinar bloques rich_text consecutivos
    ↓
-8. ✅ Migración completa
+8. Checklist final
+   ↓
+9. ✅ Migración completa
 ```
 
 ## 🆘 Si Algo Sale Mal
@@ -146,6 +169,14 @@ php download-and-upload-images-to-s3.php \
 # - articles/featured/[slug].webp
 # - articles/main-content/[slug]-[desc].webp
 ```
+
+### Problema: Videos faltantes o mal formateados
+
+**Solución:**
+1. Revisar contenido original en el navegador
+2. Buscar todos los videos de Wistia (buscar por `incfile.wistia.com` o IDs de video)
+3. Verificar que cada video esté en el artículo migrado como bloque `video`
+4. Asegurar formato correcto: `https://incfile.wistia.com/medias/[VIDEO_ID]` (ver `README-VIDEOS.md`)
 
 ### Problema: Links faltantes o mal formateados
 
@@ -166,6 +197,7 @@ php download-and-upload-images-to-s3.php \
 - **NUNCA** guardes imágenes localmente en `public/assets/` de forma permanente
 - **SIEMPRE** usa rutas de S3: `articles/featured/` o `articles/main-content/`
 - **SIEMPRE** verifica que todos los links estén incluidos
+- **SIEMPRE** verifica que todos los videos de Wistia estén incluidos
 - **SIEMPRE** aplica las reglas de formato antes de completar
 
 ## 🔗 Referencias Rápidas
@@ -175,6 +207,7 @@ php download-and-upload-images-to-s3.php \
 - **Formato:** Ver `README-FORMATTING.md`
 - **Imágenes:** Ver `README-IMAGES.md` ⚠️
 - **Links:** Ver `README-LINKS.md` ⚠️
+- **Videos:** Ver `README-VIDEOS.md` ⚠️
 
 ---
 

@@ -24,6 +24,7 @@ Before migrating, ensure you follow these structure and formatting rules:
 6. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 7. **Images:** ⚠️ **MANDATORY** - All images MUST be downloaded and uploaded to S3, and referenced correctly in the article. This includes both `featured_image` and `article_image` blocks. **Never skip this step.** ⚠️ **CRITICAL:** Images must be in S3, NOT stored locally. Always use `download-and-upload-images-to-s3.php` which uploads directly to S3. Never save images in `public/assets/` locally.
 8. **Links:** ⚠️ **MANDATORY** - All links from the original content MUST be included in the migrated article using Bard format with `marks` and `attrs`. **Always verify that no links are missing.** Links must be properly formatted with correct `href`, `rel`, `target`, and `title` attributes.
+9. **Videos:** ⚠️ **MANDATORY** - All videos from Wistia present in the original article MUST be included in the migrated article as `video` blocks in `main_blocks`. Videos must use the correct Wistia URL format (`https://incfile.wistia.com/medias/[VIDEO_ID]`). **Never skip videos.** Videos can appear after the intro or anywhere in the main content. See `README-VIDEOS.md` for complete guidelines.
 
 **📚 Documentación Completa:**
 - **`QUICK-START.md`** - 🚀 Entry point principal (empieza aquí)
@@ -32,6 +33,7 @@ Before migrating, ensure you follow these structure and formatting rules:
 - **`README-FORMATTING.md`** - Reglas de formato (quotes, links, line breaks)
 - **`README-IMAGES.md`** - ⚠️ **CRÍTICO:** Procesamiento obligatorio de imágenes (deben estar en S3, NO localmente)
 - **`README-LINKS.md`** - ⚠️ **CRÍTICO:** Verificación obligatoria de links
+- **`README-VIDEOS.md`** - ⚠️ **CRÍTICO:** Migración obligatoria de videos con Wistia
 - **`SCRIPTS-REFERENCE.md`** - Referencia de todos los scripts
 
 ## Article Structure
