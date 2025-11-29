@@ -11,7 +11,7 @@ Before using any migration scripts, ensure you follow these formatting rules:
 3. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
 4. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 
-See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines.
+See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines, and `README-IMAGES.md` for mandatory image processing rules.
 
 ## Available Scripts
 
@@ -237,6 +237,8 @@ $processedBlocks = $migrator->processMainBlocks($mainBlocks);
 
 ## Recommended Migration Flow
 
+⚠️ **IMPORTANT:** Always process images as part of the migration. Never skip image processing.
+
 ### Option 1: Complete Automated Migration ⭐ RECOMMENDED
 ```bash
 # 1. Complete content migration (downloads images, uploads to S3 and migrates URLs)
@@ -252,21 +254,30 @@ php verify-and-fix-article.php \
   [old_url]
 ```
 
+**Note:** `migrate-complete.php` automatically handles image processing. If you migrate manually, you MUST run `download-and-upload-images-to-s3.php` separately.
+
 **Note:** `migrate-complete.php` now uploads images directly to S3 without saving them locally.
 
 ### Option 2: Step-by-Step Migration
+⚠️ **IMPORTANT:** If migrating manually, you MUST follow ALL steps including image processing.
+
 ```bash
-# 1. Download and upload images directly to S3
+# 1. ⚠️ MANDATORY: Download and upload images directly to S3
+#    This step MUST be done for every migration, no exceptions
 php download-and-upload-images-to-s3.php \
   https://bizee.com/articles/[slug] \
   [slug]
 
-# 2. Migrate URLs
+# 2. Update article file with image paths:
+#    - Set featured_image: articles/featured/[slug].webp
+#    - Add article_image blocks for content images: articles/main-content/[slug]-*.webp
+
+# 3. Migrate URLs
 php migrate-urls.php \
   content/collections/articles/[date].[slug].md \
   image-mapping-[slug].json
 
-# 3. Verify and fix format, category and redirects
+# 4. Verify and fix format, category and redirects
 php verify-and-fix-article.php \
   content/collections/articles/[date].[slug].md \
   [category] \

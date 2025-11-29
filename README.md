@@ -12,8 +12,9 @@ Before migrating, ensure you follow these structure and formatting rules:
 4. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions like `you'll`, `won't`, `Bizee's`, etc.). Use single quotes (`'`) for text without apostrophes.
 5. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`. See formatting guide below.
 6. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
+7. **Images:** ⚠️ **MANDATORY** - All images MUST be downloaded and uploaded to S3, and referenced correctly in the article. This includes both `featured_image` and `article_image` blocks. **Never skip this step.**
 
-See `README-STRUCTURE.md` for complete structure guidelines, `README-LISTS.md` for list handling, and `README-FORMATTING.md` for formatting rules (quotes and links).
+See `README-STRUCTURE.md` for complete structure guidelines, `README-LISTS.md` for list handling, `README-FORMATTING.md` for formatting rules (quotes and links), and `README-IMAGES.md` for mandatory image processing rules.
 
 ## Article Structure
 
@@ -203,6 +204,8 @@ Embedded video.
 
 ## Migration Process
 
+⚠️ **IMPORTANT:** Always follow ALL steps in order. Skipping any step (especially image processing) will result in an incomplete migration.
+
 1. **Prepare content**
    - Extract text from original article
    - Identify sections, headings, lists, images
@@ -220,15 +223,22 @@ Embedded video.
    - All remaining content goes in `main_blocks`
    - **IMPORTANT:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.)
 
-4. **Add metadata**
+4. **Process images** ⚠️ **MANDATORY STEP**
+   - **ALWAYS** download and upload images to S3 using `download-and-upload-images-to-s3.php`
+   - Update `featured_image` field with the correct S3 path
+   - Add `article_image` blocks for content images with correct S3 paths
+   - **This step MUST be done for every migration, no exceptions**
+
+5. **Add metadata**
    - Assign author(s)
    - Assign category
    - Configure SEO
    - Configure page settings
 
-5. **Verify**
+6. **Verify**
    - Check that all required fields are present
    - Verify valid YAML format
+   - Verify all images are correctly referenced from S3
    - Test in Statamic CMS
 
 ## Scripts and Helpers
