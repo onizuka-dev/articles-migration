@@ -6,8 +6,17 @@
  * This script helps convert HTML/plain text content to the Statamic article
  * structure used in this project.
  *
+ * IMPORTANT FORMATTING RULES:
+ * - Use double quotes for text containing apostrophes (contractions)
+ * - Use single quotes for text without apostrophes
+ * - All links in rich_text must use Bard format with marks and attrs
+ *
+ * See README-FORMATTING.md for complete formatting guidelines.
+ *
  * Usage: php migrate-article.php
  */
+
+require_once __DIR__ . '/formatting-helper.php';
 
 class ArticleMigrator
 {

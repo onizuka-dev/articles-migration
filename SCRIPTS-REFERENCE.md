@@ -2,6 +2,15 @@
 
 This guide documents all available scripts and their parameters.
 
+## ⚠️ Important Formatting Rules
+
+Before using any migration scripts, ensure you follow these formatting rules:
+
+1. **Quotes:** Use double quotes (`"`) for text containing apostrophes (contractions). Use single quotes (`'`) for text without apostrophes.
+2. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`.
+
+See `README-FORMATTING.md` for complete formatting guidelines.
+
 ## Available Scripts
 
 ### 1. `verify-and-fix-article.php`

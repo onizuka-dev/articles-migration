@@ -6,9 +6,14 @@
  * This helper ensures that all buttons are generated:
  * - Without bold formatting
  * - Left-aligned
+ * - With proper quote formatting (double quotes for text with apostrophes)
+ *
+ * IMPORTANT: This helper uses formatting rules from formatting-helper.php
+ * See README-FORMATTING.md for complete formatting guidelines.
  *
  * Usage:
  *   require_once 'button-helper.php';
+ *   require_once 'formatting-helper.php';
  *   $button = generateArticleButton($id, $label, $url, $openInNewTab);
  */
 
