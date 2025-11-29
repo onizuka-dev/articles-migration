@@ -24,7 +24,7 @@ Este script automatiza TODO:
 
 El script genera una estructura base. Debes:
 - Revisar el contenido generado
-- Verificar que todos los links estén en formato Bard
+- ⚠️ **OBLIGATORIO:** Verificar que todos los links del contenido original estén incluidos en formato Bard (ver paso 3)
 - Verificar que todos los videos de Wistia estén incluidos como bloques `video`
 - Asegurar que las imágenes estén correctamente referenciadas
 - Completar cualquier contenido faltante
@@ -33,8 +33,8 @@ El script genera una estructura base. Debes:
 
 Antes de considerar la migración completa:
 
+- [ ] ⚠️ **OBLIGATORIO:** ¿Revisaste que TODOS los links del contenido original están incluidos en formato Bard? (Esta verificación DEBE hacerse al final de cada migración)
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
-- [ ] ¿Todos los links del contenido original están incluidos en formato Bard?
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
 - [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
 - [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?

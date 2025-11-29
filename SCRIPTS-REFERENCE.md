@@ -297,6 +297,8 @@ $processedBlocks = $migrator->processMainBlocks($mainBlocks);
 
 ⚠️ **IMPORTANT:** Always process images as part of the migration. Never skip image processing.
 
+⚠️ **CRITICAL:** A final link verification MUST be performed at the end of each migration. This is part of the main checklist and is NOT optional.
+
 ### Option 1: Complete Automated Migration ⭐ RECOMMENDED
 ```bash
 # 1. Complete content migration (downloads images, uploads to S3, migrates URLs, and extracts SEO fields)

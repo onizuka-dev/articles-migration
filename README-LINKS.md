@@ -11,11 +11,13 @@
 3. **Experiencia de usuario:** Los links proporcionan contexto y recursos adicionales
 4. **Consistencia:** Todos los artículos deben mantener la misma estructura de links
 
-## Proceso Obligatorio de Verificación de Links
+## ⚠️ Proceso Obligatorio de Verificación de Links
+
+**Este proceso DEBE realizarse al final de cada migración, como parte del checklist principal.**
 
 ### Paso 1: Identificar Todos los Links del Contenido Original
 
-Antes de migrar, identifica TODOS los links en el contenido original:
+**⚠️ OBLIGATORIO:** Antes de completar la migración, identifica TODOS los links en el contenido original:
 
 - Links en el texto principal
 - Links en listas
@@ -48,26 +50,34 @@ content:
     text: ' texto después del link.'
 ```
 
-### Paso 3: Verificar que Todos los Links Estén Presentes
+### Paso 3: ⚠️ Verificación Final Obligatoria de Links
 
-**ANTES de completar la migración, verifica:**
+**⚠️ ESTE PASO ES OBLIGATORIO Y DEBE REALIZARSE AL FINAL DE CADA MIGRACIÓN:**
 
-1. Compara el contenido original con el migrado
-2. Lista todos los links del contenido original
-3. Verifica que cada link esté en el artículo migrado
-4. Verifica que cada link tenga el formato Bard correcto
+1. **Compara el contenido original con el migrado** - Abre la página de producción y el artículo migrado lado a lado
+2. **Lista todos los links del contenido original** - Crea una lista completa de todos los links visibles en el contenido
+3. **Verifica que cada link esté en el artículo migrado** - Revisa uno por uno que cada link de la lista esté presente
+4. **Verifica que cada link tenga el formato Bard correcto** - Asegúrate de que todos usen `marks` y `attrs`
+5. **Verifica que las URLs sean correctas** - Compara las URLs de producción con las del artículo migrado
 
-## Checklist de Links
+**⚠️ NUNCA omitas este paso. Es parte del checklist principal de migración.**
+
+## ⚠️ CHECKLIST OBLIGATORIO DE LINKS
+
+**Esta verificación DEBE realizarse al final de CADA migración, antes de considerar el artículo completo.**
 
 Antes de considerar una migración completa, verifica:
 
-- [ ] ⚠️ **¿Identifiqué TODOS los links del contenido original?**
-- [ ] ⚠️ **¿Todos los links están incluidos en el artículo migrado?**
-- [ ] ¿Cada link usa el formato Bard con `marks` y `attrs`?
+- [ ] ⚠️ **OBLIGATORIO:** ¿Identifiqué TODOS los links del contenido original? (Compara el HTML de producción con el artículo migrado)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Todos los links están incluidos en el artículo migrado? (Ningún link puede faltar)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Cada link usa el formato Bard con `marks` y `attrs`? (Nunca dejar links como texto plano)
 - [ ] ¿Los links externos tienen `rel: 'noopener noreferrer'` y `target: '_blank'`?
 - [ ] ¿Los links internos tienen `rel: null` y `target: null`?
 - [ ] ¿El texto del link está en su propio nodo `text`?
 - [ ] ¿El texto antes y después del link está en nodos `text` separados?
+- [ ] ⚠️ **OBLIGATORIO:** ¿Las URLs de los links coinciden exactamente con las de producción? (Verifica que no haya URLs incorrectas)
+
+**⚠️ IMPORTANTE:** Esta verificación NO es opcional. Es parte del checklist principal y DEBE realizarse al final de cada migración.
 
 ## Tipos de Links
 
@@ -157,15 +167,20 @@ content:
     text: '.'
 ```
 
-## Proceso de Verificación
+## ⚠️ Proceso de Verificación Obligatorio
 
-### Método 1: Comparación Manual
+**Este proceso DEBE realizarse al final de cada migración, como parte del checklist principal.**
 
-1. Abre el contenido original en el navegador
-2. Identifica todos los links visibles
-3. Crea una lista de todos los links encontrados
-4. Revisa el artículo migrado y marca cada link como verificado
-5. Si falta algún link, agrégalo inmediatamente
+### Método 1: Comparación Manual (Recomendado)
+
+1. **Abre el contenido original en el navegador** - Visita la URL de producción
+2. **Identifica todos los links visibles** - Revisa todo el contenido principal (no incluyas navegación, footer, etc.)
+3. **Crea una lista de todos los links encontrados** - Anota el texto del link y su URL
+4. **Revisa el artículo migrado y marca cada link como verificado** - Compara uno por uno
+5. **Si falta algún link, agrégalo inmediatamente** - No completes la migración hasta que todos estén presentes
+6. **Verifica que las URLs sean correctas** - Compara las URLs de producción con las del artículo migrado
+
+**⚠️ Este paso es OBLIGATORIO y forma parte del checklist principal de migración.**
 
 ### Método 2: Búsqueda en el Código
 
