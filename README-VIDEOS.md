@@ -229,4 +229,3 @@ Los scripts de migración (`migrate-article.php`, `migrate-complete.php`) deber�
 - Ver `README.md` para el proceso completo de migración
 - Ver `README-STRUCTURE.md` para estructura de bloques
 - Ver `resources/views/sets/video/article_video_1.antlers.html` para el template de renderizado
-

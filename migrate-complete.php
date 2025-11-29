@@ -7,11 +7,15 @@
  * 1. Downloads images from the original article
  * 2. Analyzes and maps URLs
  * 3. Updates the article file with correct paths
+ * 4. ⚠️ MANDATORY: Extracts and adds SEO fields from production page
  *
  * Usage: php migrate-complete.php [ARTICLE_URL] [SLUG] [ARTICLE_FILE_PATH]
  *
  * Example:
  * php migrate-complete.php https://bizee.com/articles/can-a-minor-own-a-business can-a-minor-own-a-business content/collections/articles/2024-11-21.can-a-minor-own-a-business.md
+ *
+ * ⚠️ IMPORTANT: This script MUST extract SEO fields (title and meta description) from the production page
+ * and add them to the article frontmatter. See README-SEO.md for complete guidelines.
  */
 
 require_once __DIR__ . '/migrate-urls.php';

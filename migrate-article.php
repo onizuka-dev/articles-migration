@@ -372,6 +372,66 @@ YAML;
 
         return $combined;
     }
+
+    /**
+     * ⚠️ MANDATORY: Extracts SEO fields from production page.
+     *
+     * This function MUST be called for every article migration to get:
+     * - Title from <title> tag
+     * - Meta description from <meta name="description"> tag
+     *
+     * @param string $url Production URL of the article (e.g., https://bizee.com/articles/slug)
+     * @return array Array with 'title' and 'description' keys
+     */
+    public function extractSEOFields(string $url): array
+    {
+        $html = @file_get_contents($url);
+        if ($html === false) {
+            throw new \Exception("Failed to fetch HTML from: {$url}");
+        }
+
+        $seoFields = [
+            'title' => '',
+            'description' => ''
+        ];
+
+        // Extract title from <title> tag
+        if (preg_match('/<title>(.*?)<\/title>/is', $html, $titleMatches)) {
+            $seoFields['title'] = html_entity_decode(trim($titleMatches[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+
+        // Extract meta description
+        if (preg_match('/<meta[^>]*name=["\']description["\'][^>]*content=["\']([^"\']*)["\']/i', $html, $descMatches)) {
+            $seoFields['description'] = html_entity_decode(trim($descMatches[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+
+        return $seoFields;
+    }
+
+    /**
+     * ⚠️ MANDATORY: Generates SEO fields array for article frontmatter.
+     *
+     * This function MUST be called for every article migration to generate
+     * the required SEO fields in the frontmatter.
+     *
+     * @param string $productionTitle Title from <title> tag of production page
+     * @param string $productionDescription Meta description from production page
+     * @return array Array with all SEO fields
+     */
+    public function generateSEOFields(string $productionTitle, string $productionDescription): array
+    {
+        return [
+            'seo_title' => 'custom',
+            'seo_meta_description' => 'custom',
+            'seo_custom_meta_title' => $productionTitle,
+            'seo_custom_meta_description' => $productionDescription,
+            'seo_canonical' => 'none',
+            'seo_og_description' => 'general',
+            'seo_og_title' => 'title',
+            'seo_tw_title' => 'title',
+            'seo_tw_description' => 'general',
+        ];
+    }
 }
 
 // Execute migrator

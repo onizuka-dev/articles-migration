@@ -36,6 +36,9 @@ Antes de considerar la migración completa:
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
 - [ ] ¿Todos los links del contenido original están incluidos en formato Bard?
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
+- [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
+- [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?
+- [ ] ¿El `seo_custom_meta_description` es la meta description exacta de producción?
 - [ ] ¿Las comillas están correctas? (dobles `"` para texto con apostrofes, simples `'` para el resto; escapar comillas dobles internas con `\"`)
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?
@@ -57,6 +60,7 @@ Antes de considerar la migración completa:
 - **`README-IMAGES.md`** - ⚠️ **CRÍTICO:** Procesamiento obligatorio de imágenes
 - **`README-LINKS.md`** - ⚠️ **CRÍTICO:** Verificación obligatoria de links
 - **`README-VIDEOS.md`** - ⚠️ **CRÍTICO:** Migración obligatoria de videos con Wistia
+- **`README-SEO.md`** - ⚠️ **CRÍTICO:** Campos SEO obligatorios en todos los artículos migrados
 
 ## ⚠️ Reglas Críticas (NUNCA Olvidar)
 

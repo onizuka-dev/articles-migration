@@ -10,8 +10,9 @@ Before using any migration scripts, ensure you follow these formatting rules:
 2. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`.
 3. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
 4. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
+5. **SEO Fields:** ⚠️ **MANDATORY** - All migrated articles MUST include SEO fields in the frontmatter. These fields must be extracted from the production page. See `README-SEO.md` for complete guidelines.
 
-See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines, `README-IMAGES.md` for mandatory image processing rules, and `README-LINKS.md` for mandatory link verification rules.
+See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines, `README-IMAGES.md` for mandatory image processing rules, `README-LINKS.md` for mandatory link verification rules, and `README-SEO.md` for mandatory SEO fields.
 
 ## Available Scripts
 
@@ -247,6 +248,37 @@ $text3 = formatTextForYaml('So although "need" may be a strong word, Let\'s chec
 // Result: "So although \"need\" may be a strong word, Let's check"
 ```
 
+**SEO Helper Functions (from `migrate-article.php`):**
+
+6. **`extractSEOFields($url)`** ⚠️ MANDATORY
+   - Extracts SEO fields from production page
+   - Gets title from `<title>` tag
+   - Gets meta description from `<meta name="description">` tag
+   - **MUST be called for every article migration**
+   - Returns array with 'title' and 'description' keys
+
+7. **`generateSEOFields($productionTitle, $productionDescription)`** ⚠️ MANDATORY
+   - Generates all required SEO fields for article frontmatter
+   - Takes title and description from production page
+   - Returns array with all SEO fields ready to add to frontmatter
+   - **MUST be called for every article migration**
+
+**Example:**
+```php
+$migrator = new ArticleMigrator();
+
+// Extract SEO fields from production page
+$seoData = $migrator->extractSEOFields('https://bizee.com/articles/bizee-premium-package');
+// Returns: ['title' => 'Here Is What Is Included In Bizee\'s Platinum Package', 'description' => 'The Platinum Package starts at...']
+
+// Generate SEO fields array for frontmatter
+$seoFields = $migrator->generateSEOFields($seoData['title'], $seoData['description']);
+// Returns array with all SEO fields ready to add to article frontmatter
+
+// Add to article frontmatter
+$articleFrontmatter = array_merge($baseFrontmatter, $seoFields);
+```
+
 **Usage Example:**
 ```php
 $migrator = new ArticleMigrator();
@@ -267,7 +299,7 @@ $processedBlocks = $migrator->processMainBlocks($mainBlocks);
 
 ### Option 1: Complete Automated Migration ⭐ RECOMMENDED
 ```bash
-# 1. Complete content migration (downloads images, uploads to S3 and migrates URLs)
+# 1. Complete content migration (downloads images, uploads to S3, migrates URLs, and extracts SEO fields)
 php migrate-complete.php \
   https://bizee.com/articles/[slug] \
   [slug] \
@@ -280,7 +312,13 @@ php verify-and-fix-article.php \
   [old_url]
 ```
 
-**Note:** `migrate-complete.php` automatically handles image processing. If you migrate manually, you MUST run `download-and-upload-images-to-s3.php` separately.
+**Note:** `migrate-complete.php` automatically handles:
+- Image processing (downloads and uploads to S3)
+- ⚠️ **MANDATORY:** SEO fields extraction from production page
+
+If you migrate manually, you MUST:
+- Run `download-and-upload-images-to-s3.php` separately
+- ⚠️ **MANDATORY:** Extract and add SEO fields manually (see `README-SEO.md`)
 
 **Note:** `migrate-complete.php` now uploads images directly to S3 without saving them locally.
 
