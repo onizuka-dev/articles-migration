@@ -13,8 +13,9 @@ Before migrating, ensure you follow these structure and formatting rules:
 5. **Links:** All links in `rich_text` content must use Bard format with `marks` and `attrs`. See formatting guide below.
 6. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 7. **Images:** ⚠️ **MANDATORY** - All images MUST be downloaded and uploaded to S3, and referenced correctly in the article. This includes both `featured_image` and `article_image` blocks. **Never skip this step.**
+8. **Links:** ⚠️ **MANDATORY** - All links from the original content MUST be included in the migrated article using Bard format with `marks` and `attrs`. **Always verify that no links are missing.** Links must be properly formatted with correct `href`, `rel`, `target`, and `title` attributes.
 
-See `README-STRUCTURE.md` for complete structure guidelines, `README-LISTS.md` for list handling, `README-FORMATTING.md` for formatting rules (quotes and links), and `README-IMAGES.md` for mandatory image processing rules.
+See `README-STRUCTURE.md` for complete structure guidelines, `README-LISTS.md` for list handling, `README-FORMATTING.md` for formatting rules (quotes and links), `README-IMAGES.md` for mandatory image processing rules, and `README-LINKS.md` for mandatory link verification rules.
 
 ## Article Structure
 
@@ -239,6 +240,7 @@ Embedded video.
    - Check that all required fields are present
    - Verify valid YAML format
    - Verify all images are correctly referenced from S3
+   - ⚠️ **MANDATORY:** Verify that ALL links from the original content are included and properly formatted
    - Test in Statamic CMS
 
 ## Scripts and Helpers

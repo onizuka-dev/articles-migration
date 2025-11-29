@@ -41,9 +41,11 @@ text: 'Selecting your business entity type'
 
 ## 2. Formato de Links en Rich Text (Bard)
 
-### Regla: Links Deben Estar en Formato Bard con Marks
+### Regla: Links Deben Estar en Formato Bard con Marks ⚠️ MANDATORY
 
 **Regla General:** Todos los links dentro del contenido `rich_text` deben estar estructurados usando el formato Bard con `marks` y `attrs`.
+
+**⚠️ CRÍTICO:** Todos los links del contenido original DEBEN estar incluidos en el artículo migrado. **Nunca omitas links del contenido original.** Siempre verifica que todos los links estén presentes antes de completar la migración.
 
 ### Estructura Correcta de un Link
 
@@ -137,11 +139,14 @@ attrs:
 
 ### Checklist
 
+- [ ] ⚠️ **¿Todos los links del contenido original están incluidos?** (CRÍTICO: Verificar contra el contenido original)
 - [ ] ¿El link está dentro de un bloque `rich_text`?
 - [ ] ¿El link usa `marks` con `type: link`?
 - [ ] ¿El link tiene `attrs` con `href`, `rel`, `target`, y `title`?
 - [ ] ¿El texto del link está separado en su propio nodo `text`?
 - [ ] ¿El texto antes y después del link está en nodos `text` separados?
+- [ ] ¿Los links externos tienen `rel: 'noopener noreferrer'` y `target: '_blank'`?
+- [ ] ¿Los links internos tienen `rel: null` y `target: null`?
 
 ## 3. Combinación de Reglas
 
@@ -305,4 +310,5 @@ content:
 
 - Ver `README-STRUCTURE.md` para reglas de estructura de contenido
 - Ver `README-LISTS.md` para reglas de manejo de listas
+- Ver `README-LINKS.md` para reglas obligatorias de verificación de links
 - Ver `README.md` para información general sobre migración

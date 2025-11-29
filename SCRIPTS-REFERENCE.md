@@ -11,7 +11,7 @@ Before using any migration scripts, ensure you follow these formatting rules:
 3. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.).
 4. **Line Breaks:** There must be exactly 1 line break (`hardBreak`) between paragraphs, headings, and lists.
 
-See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines, and `README-IMAGES.md` for mandatory image processing rules.
+See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting guidelines, `README-IMAGES.md` for mandatory image processing rules, and `README-LINKS.md` for mandatory link verification rules.
 
 ## Available Scripts
 
