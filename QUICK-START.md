@@ -44,6 +44,12 @@ Antes de considerar la migración completa:
 - [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
 - [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?
 - [ ] ¿El `seo_custom_meta_description` es la meta description exacta de producción?
+- [ ] ⚠️ **OBLIGATORIO:** ¿Agregaste las rutas en `app/Routing/migration/released-articles.php` y `app/Routing/redirects.php`?
+  - **PASO 1:** Verifica si la ruta ya existe en `released-articles.php` (buscar por slug)
+  - **PASO 2:** Si no existe, agrega `/articles/{slug_category}/{slug}` a `released-articles.php`
+  - **PASO 3:** Verifica si el redirect ya existe en `redirects.php` (buscar por slug original)
+  - **PASO 4:** Si no existe, agrega `/articles/{old-slug}` => `/articles/{slug_category}/{slug}` a `redirects.php`
+  - **⚠️ ESTE PASO ES OBLIGATORIO Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
 - [ ] ¿Las comillas están correctas? (dobles `"` para texto con apostrofes, simples `'` para el resto; escapar comillas dobles internas con `\"`; ⚠️ **NO escapar comillas simples cuando usas comillas dobles como wrapper**)
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?

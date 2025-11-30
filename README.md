@@ -26,6 +26,7 @@ Before migrating, ensure you follow these structure and formatting rules:
 8. **Links:** ⚠️ **MANDATORY** - All links from the original content MUST be included in the migrated article using Bard format with `marks` and `attrs`. **⚠️ CRITICAL:** A final link verification MUST be performed at the end of each migration as part of the main checklist. **This verification CANNOT be skipped or omitted.** **Always verify that no links are missing by comparing the production page with the migrated article.** Links must be properly formatted with correct `href`, `rel`, `target`, and `title` attributes. See `README-LINKS.md` for complete guidelines.
 9. **Videos:** ⚠️ **MANDATORY** - All videos from Wistia present in the original article MUST be included in the migrated article as `video` blocks in `main_blocks`. Videos must use the correct Wistia URL format (`https://incfile.wistia.com/medias/[VIDEO_ID]`). **Never skip videos.** Videos can appear after the intro or anywhere in the main content. See `README-VIDEOS.md` for complete guidelines.
 10. **SEO Fields:** ⚠️ **MANDATORY** - All migrated articles MUST include SEO fields in the frontmatter. These fields must be extracted from the production page: `seo_title`, `seo_meta_description`, `seo_custom_meta_title` (from `<title>` tag), `seo_custom_meta_description` (from meta description), `seo_canonical`, `seo_og_description`, `seo_og_title`, `seo_tw_title`, `seo_tw_description`. **Never skip SEO fields.** See `README-SEO.md` for complete guidelines.
+11. **Routing:** ⚠️ **MANDATORY** - All migrated articles MUST have their routes added to `app/Routing/migration/released-articles.php` and redirects added to `app/Routing/redirects.php`. The route format is `/articles/{slug_category}/{slug}`. The redirect format is `/articles/{old-slug}` => `/articles/{slug_category}/{slug}`. **Always verify if routes already exist before adding.** **Never skip routing.** This step is part of the main checklist.
 
 **📚 Documentación Completa:**
 - **`QUICK-START.md`** - 🚀 Entry point principal (empieza aquí)
@@ -36,6 +37,7 @@ Before migrating, ensure you follow these structure and formatting rules:
 - **`README-LINKS.md`** - ⚠️ **CRÍTICO:** Verificación obligatoria de links
 - **`README-VIDEOS.md`** - ⚠️ **CRÍTICO:** Migración obligatoria de videos con Wistia
 - **`README-SEO.md`** - ⚠️ **CRÍTICO:** Campos SEO obligatorios en todos los artículos migrados
+- **`README-ROUTING.md`** - ⚠️ **CRÍTICO:** Routing obligatorio (released-articles.php y redirects.php)
 - **`SCRIPTS-REFERENCE.md`** - Referencia de todos los scripts
 
 ## Article Structure
