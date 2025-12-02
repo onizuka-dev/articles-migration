@@ -16,6 +16,8 @@ Este es el entry point principal que contiene:
 
 Before migrating, ensure you follow these structure and formatting rules:
 
+0. **UUID:** ⚠️ **CRITICAL** - Each article MUST have a unique UUID v4. **NEVER copy the UUID from another article.** If two articles share the same UUID, Statamic will only recognize one of them, causing the other to not appear in the dashboard. Always generate a new UUID for each article.
+
 1. **Intro:** Only the first paragraph goes in `intro`. All remaining content goes in `main_blocks`.
 2. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.). This rule must be applied automatically during migration.
 3. **Lists:** All lists (including numbered lists) should be migrated as `bulletList`.
@@ -326,7 +328,7 @@ Use `bulletList` for **all lists**, including numbered lists from HTML:
 
 ## Important Notes
 
-- UUIDs must be unique for each article
+- ⚠️ **CRITICAL:** UUIDs must be unique for each article. **NEVER copy a UUID from another article.** Each article must have its own unique UUID v4. If two articles share the same UUID, Statamic will only recognize one of them, and the other will not appear in the dashboard. Always generate a new UUID using `generateUUID()` or a UUID generator tool.
 - Images must be in the correct asset container
 - Bard format is sensitive to YAML indentation
 - Blocks must have unique IDs within the article

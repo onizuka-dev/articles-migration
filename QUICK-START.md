@@ -33,6 +33,7 @@ El script genera una estructura base. Debes:
 
 Antes de considerar la migración completa:
 
+- [ ] ⚠️ **CRÍTICO:** ¿El UUID del artículo es único? (NUNCA copiar el UUID de otro artículo. Si dos artículos comparten el mismo UUID, Statamic solo reconocerá uno y el otro no aparecerá en el dashboard)
 - [ ] ⚠️ **OBLIGATORIO:** ¿Revisaste que TODOS los links del contenido original están incluidos en formato Bard?
   - **PASO 1:** Abre la página de producción en el navegador
   - **PASO 2:** Identifica TODOS los links visibles en el contenido principal
@@ -74,6 +75,18 @@ Antes de considerar la migración completa:
 - **`README-SEO.md`** - ⚠️ **CRÍTICO:** Campos SEO obligatorios en todos los artículos migrados
 
 ## ⚠️ Reglas Críticas (NUNCA Olvidar)
+
+### 0. UUID: CRÍTICO - Debe Ser Único
+
+**NUNCA** copies el UUID de otro artículo. **SIEMPRE** genera un UUID único para cada artículo:
+
+- Cada artículo DEBE tener su propio UUID v4 único
+- Si dos artículos comparten el mismo UUID, Statamic solo reconocerá uno de ellos
+- El artículo con UUID duplicado NO aparecerá en el dashboard
+- Siempre genera un nuevo UUID usando `generateUUID()` o una herramienta generadora de UUID
+
+**❌ INCORRECTO:** Copiar `id: a47e5476-277e-a3aa-277e-d97433dd42a5` de otro artículo
+**✅ CORRECTO:** Generar un nuevo UUID único para cada artículo
 
 ### 1. Imágenes: OBLIGATORIO en S3
 
