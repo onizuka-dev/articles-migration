@@ -50,7 +50,7 @@ Antes de considerar la migración completa:
   - **PASO 3:** Verifica si el redirect ya existe en `redirects.php` (buscar por slug original)
   - **PASO 4:** Si no existe, agrega `/articles/{old-slug}` => `/articles/{slug_category}/{slug}` a `redirects.php`
   - **⚠️ ESTE PASO ES OBLIGATORIO Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
-- [ ] ¿Las comillas están correctas? (dobles `"` para texto con apostrofes, simples `'` para el resto; escapar comillas dobles internas con `\"`; ⚠️ **NO escapar comillas simples cuando usas comillas dobles como wrapper**)
+- [ ] ⚠️ **CRÍTICO:** ¿TODOS los strings usan comillas dobles (`"`)? (NUNCA usar comillas simples `'`; escapar comillas dobles internas con `\"`; ⚠️ **NO escapar comillas simples cuando usas comillas dobles como wrapper**)
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?
 - [ ] ¿Solo el primer párrafo está en `intro`?

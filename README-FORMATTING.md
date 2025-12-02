@@ -4,9 +4,11 @@ Este documento describe las reglas generales de formato que deben seguirse al mi
 
 ## 1. Uso de Comillas en Strings YAML
 
-### Regla: Comillas Dobles para Texto con Apostrofes
+### ⚠️ REGLA CRÍTICA: SIEMPRE Usar Comillas Dobles
 
-**Regla General:** Si el texto contiene apostrofes (contracciones como `you'll`, `won't`, `Bizee's`, `you're`, etc.), el string debe usar **comillas dobles** (`"`). Si el texto no contiene apostrofes, se pueden usar comillas simples (`'`).
+**⚠️ REGLA CRÍTICA:** **SIEMPRE usar comillas dobles (`"`) para TODOS los valores de string en YAML. NUNCA usar comillas simples (`'`).** Esta regla es crítica para evitar problemas cuando hay apostrofes, contracciones o comillas simples dentro del texto.
+
+**Razón:** Usar comillas simples puede causar errores de parsing cuando el texto contiene apostrofes (como `you'll`, `won't`, `Bizee's`, etc.) o comillas simples internas. Usar siempre comillas dobles elimina estos problemas.
 
 ### Regla: Escapar Comillas Dobles Dentro de Strings con Comillas Dobles
 
@@ -45,28 +47,33 @@ text: 'There is no \'official\' way to have a company\'s SIC code changed'
 text: "There is no 'official' way to have a company's SIC code changed"
 ```
 
-**Regla de Decisión:**
-1. Si el texto contiene apostrofes → usar comillas dobles (`"`) como wrapper y **NO escapar las comillas simples** dentro del texto. Solo escapar comillas dobles internas con `\"`.
-2. Si el texto contiene comillas dobles pero NO apostrofes → preferir comillas simples (`'`) para el string externo y escapar comillas simples internas con `''`.
-3. Si el texto contiene ambos (apostrofes Y comillas dobles) → usar comillas dobles (`"`) como wrapper, **NO escapar comillas simples**, y escapar solo las comillas dobles internas con `\"`.
+**⚠️ REGLA CRÍTICA DE DECISIÓN:**
+1. **SIEMPRE usar comillas dobles (`"`) para TODOS los strings** - sin excepciones.
+2. Si el texto contiene comillas dobles dentro → escapar las comillas dobles internas con `\"`.
+3. **NUNCA escapar comillas simples** dentro del texto cuando usas comillas dobles como wrapper - dejarlas tal cual.
 
 **⚠️ IMPORTANTE:** Los scripts de migración (`formatting-helper.php`) aplican estas reglas automáticamente. Si migras manualmente, asegúrate de seguir estas reglas o usar la función `formatTextForYaml()`.
 
 ### Ejemplos
 
-**❌ Incorrecto:**
+**❌ Incorrecto (usando comillas simples):**
 ```yaml
 text: 'Here are the premium services you'll receive for business'
 ```
 
-**✅ Correcto:**
+**❌ También Incorrecto (comillas simples incluso sin apostrofes):**
+```yaml
+text: 'Selecting your business entity type'
+```
+
+**✅ Correcto (SIEMPRE usar comillas dobles):**
 ```yaml
 text: "Here are the premium services you'll receive for business"
 ```
 
-**✅ También Correcto (sin apostrofes):**
+**✅ Correcto (SIEMPRE usar comillas dobles, incluso sin apostrofes):**
 ```yaml
-text: 'Selecting your business entity type'
+text: "Selecting your business entity type"
 ```
 
 ### Contracciones Comunes que Requieren Comillas Dobles
@@ -80,11 +87,12 @@ text: 'Selecting your business entity type'
 
 ### Checklist
 
-- [ ] ¿El texto contiene apostrofes? → Usar comillas dobles (`"`) como wrapper y **NO escapar las comillas simples** dentro del texto. Solo escapar comillas dobles internas con `\"`.
-- [ ] ¿El texto contiene comillas dobles pero NO apostrofes? → Usar comillas simples (`'`) para el string externo y escapar comillas simples internas con `''`.
-- [ ] ¿El texto NO contiene apostrofes ni comillas dobles? → Puedes usar comillas simples (`'`)
-- [ ] ¿Verificaste que las comillas dobles dentro de strings con comillas dobles estén escapadas?
+- [ ] ⚠️ **CRÍTICO:** ¿Estás usando comillas dobles (`"`) para TODOS los strings? (NUNCA usar comillas simples)
+- [ ] ¿Verificaste que las comillas dobles dentro de strings estén escapadas con `\"`?
 - [ ] ⚠️ **CRÍTICO:** ¿Verificaste que NO estés escapando comillas simples cuando usas comillas dobles como wrapper?
+- [ ] ¿Todos los valores de `text:` usan comillas dobles?
+- [ ] ¿Todos los valores de `href:` usan comillas dobles?
+- [ ] ¿Todos los valores de `title:` usan comillas dobles?
 
 ## 2. Formato de Links en Rich Text (Bard)
 
@@ -100,21 +108,21 @@ text: 'Selecting your business entity type'
 content:
   -
     type: text
-    text: 'Texto antes del link '
+    text: "Texto antes del link "
   -
     type: text
     marks:
       -
         type: link
         attrs:
-          href: 'https://example.com'
+          href: "https://example.com"
           rel: null
           target: null
           title: null
-    text: 'Texto del link'
+    text: "Texto del link"
   -
     type: text
-    text: ' texto después del link.'
+    text: " texto después del link."
 ```
 
 ### Ejemplo Completo
@@ -127,10 +135,10 @@ content:
     content:
       -
         type: text
-        text: 'If you need minimal support, then the Basic Package may be a great place to start.'
+        text: "If you need minimal support, then the Basic Package may be a great place to start."
 ```
 
-**✅ Correcto (link con formato Bard):**
+**✅ Correcto (link con formato Bard y comillas dobles):**
 ```yaml
 content:
   -
@@ -138,21 +146,21 @@ content:
     content:
       -
         type: text
-        text: 'If you need minimal support, then the '
+        text: "If you need minimal support, then the "
       -
         type: text
         marks:
           -
             type: link
             attrs:
-              href: 'https://bizee.com/blog/bizee-silver-package'
+              href: "https://bizee.com/blog/bizee-silver-package"
               rel: null
               target: null
               title: null
-        text: 'Basic Package'
+        text: "Basic Package"
       -
         type: text
-        text: ' may be a great place to start.'
+        text: " may be a great place to start."
 ```
 
 ### Atributos del Link
@@ -167,9 +175,9 @@ content:
 Para links externos (que no sean de bizee.com), generalmente se debe usar:
 ```yaml
 attrs:
-  href: 'https://external-site.com'
-  rel: 'noopener noreferrer'
-  target: '_blank'
+  href: "https://external-site.com"
+  rel: "noopener noreferrer"
+  target: "_blank"
   title: null
 ```
 
@@ -178,7 +186,7 @@ attrs:
 Para links internos (bizee.com), generalmente se debe usar:
 ```yaml
 attrs:
-  href: 'https://bizee.com/path'
+  href: "https://bizee.com/path"
   rel: null
   target: null
   title: null
@@ -203,24 +211,24 @@ Cuando un link contiene texto con apostrofes, asegúrate de aplicar ambas reglas
 content:
   -
     type: text
-    text: 'Click '
+    text: "Click "
   -
     type: text
     marks:
       -
         type: link
         attrs:
-          href: 'https://example.com'
+          href: "https://example.com"
           rel: null
           target: null
           title: null
     text: "here if you're ready"
   -
     type: text
-    text: ' to continue.'
+    text: " to continue."
 ```
 
-Nota: El texto del link (`"here if you're ready"`) usa comillas dobles porque contiene un apostrofe.
+Nota: **TODOS los strings usan comillas dobles** - esta es la regla crítica para evitar problemas con apostrofes.
 
 ## 3. Saltos de Línea entre Elementos
 
@@ -239,7 +247,7 @@ content:
     content:
       -
         type: text
-        text: 'Título de Sección'
+        text: "Título de Sección"
   -
     type: paragraph
     content:
@@ -250,7 +258,7 @@ content:
     content:
       -
         type: text
-        text: 'Texto del párrafo después del heading.'
+        text: "Texto del párrafo después del heading."
   -
     type: paragraph
     content:
@@ -267,7 +275,7 @@ content:
             content:
               -
                 type: text
-                text: 'Item 1'
+                text: "Item 1"
   -
     type: paragraph
     content:
@@ -278,7 +286,7 @@ content:
     content:
       -
         type: text
-        text: 'Texto después de la lista.'
+        text: "Texto después de la lista."
 ```
 
 ### Reglas Específicas
@@ -300,13 +308,13 @@ content:
     content:
       -
         type: text
-        text: 'Título'
+        text: "Título"
   -
     type: paragraph
     content:
       -
         type: text
-        text: 'Texto sin salto de línea'
+        text: "Texto sin salto de línea"
   -
     type: bulletList
     # ... lista sin salto antes
@@ -323,7 +331,7 @@ content:
     content:
       -
         type: text
-        text: 'Título'
+        text: "Título"
   -
     type: paragraph
     content:
@@ -334,7 +342,7 @@ content:
     content:
       -
         type: text
-        text: 'Texto con salto de línea'
+        text: "Texto con salto de línea"
   -
     type: paragraph
     content:
