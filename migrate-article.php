@@ -418,7 +418,7 @@ YAML;
      * @param string $productionDescription Meta description from production page
      * @return array Array with all SEO fields
      */
-    public function generateSEOFields(string $productionTitle, string $productionDescription): array
+    public function generateSEOFields(string $productionTitle, string $productionDescription, string $featuredImage): array
     {
         return [
             'seo_title' => 'custom',
@@ -430,6 +430,7 @@ YAML;
             'seo_og_title' => 'title',
             'seo_tw_title' => 'title',
             'seo_tw_description' => 'general',
+            'seo_og_image' => [$featuredImage], // ⚠️ CRÍTICO: Siempre debe ser la misma imagen que featured_image
         ];
     }
 }

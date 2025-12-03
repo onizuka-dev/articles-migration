@@ -42,9 +42,10 @@ Antes de considerar la migración completa:
   - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN - NO PUEDE OMITIRSE**
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
-- [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
+- [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, `seo_og_image`, etc.)
 - [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?
 - [ ] ¿El `seo_custom_meta_description` es la meta description exacta de producción?
+- [ ] ⚠️ **CRÍTICO:** ¿El campo `seo_og_image` contiene la misma imagen que `featured_image`? (debe ser exactamente la misma ruta)
 - [ ] ⚠️ **OBLIGATORIO:** ¿Agregaste las rutas en `app/Routing/migration/released-articles.php` y `app/Routing/redirects.php`?
   - **PASO 1:** Verifica si la ruta ya existe en `released-articles.php` (buscar por slug)
   - **PASO 2:** Si no existe, agrega `/articles/{slug_category}/{slug}` a `released-articles.php`
