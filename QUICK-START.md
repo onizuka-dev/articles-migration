@@ -30,6 +30,32 @@ El script genera una estructura base. Debes:
 - Asegurar que las imágenes estén correctamente referenciadas
 - Completar cualquier contenido faltante
 
+### 2.5. ⚠️ **NUEVO:** Ejecutar Verificación Automática (Recomendado)
+
+**ANTES** de revisar manualmente, ejecuta el script de verificación automática:
+
+```bash
+php verify-migration.php \
+  content/collections/articles/[fecha].[slug].md \
+  https://bizee.com/articles/[slug]
+```
+
+Este script verifica automáticamente:
+- ✅ UUID único (no duplicado)
+- ✅ Campos SEO presentes y correctos
+- ✅ Imágenes en S3 (no locales)
+- ✅ Links completos (comparación con producción)
+- ✅ Videos de Wistia incluidos
+- ✅ CTAs (article_button) incluidos
+- ✅ Tablas migradas como info_table
+- ✅ Routing en released-articles.php y redirects.php
+- ✅ Comillas dobles en YAML
+- ✅ Estructura de bloques (type y enabled)
+- ✅ Bloques rich_text combinados
+- ✅ Estructura de intro correcta
+
+**El script mostrará errores y warnings que debes corregir antes de continuar.**
+
 ### 3. Verificar Checklist Final
 
 Antes de considerar la migración completa:

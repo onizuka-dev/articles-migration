@@ -43,6 +43,32 @@ Before migrating, ensure you follow these structure and formatting rules:
 - **`README-ROUTING.md`** - ⚠️ **CRÍTICO:** Routing obligatorio (released-articles.php y redirects.php)
 - **`SCRIPTS-REFERENCE.md`** - Referencia de todos los scripts
 
+## 🔍 Verificación Automática Post-Migración
+
+**⚠️ RECOMENDADO:** Después de migrar un artículo, ejecuta el script de verificación automática:
+
+```bash
+php verify-migration.php \
+  content/collections/articles/[fecha].[slug].md \
+  https://bizee.com/articles/[slug]
+```
+
+Este script verifica automáticamente todos los puntos críticos que comúnmente requieren revisión:
+- UUID único
+- Campos SEO completos y correctos
+- Imágenes en S3 (no locales)
+- Links completos (comparación con producción)
+- Videos de Wistia incluidos
+- CTAs (article_button) incluidos
+- Tablas migradas como info_table
+- Routing en released-articles.php y redirects.php
+- Comillas dobles en YAML
+- Estructura de bloques correcta
+- Bloques rich_text combinados
+- Estructura de intro correcta
+
+Ver `SCRIPTS-REFERENCE.md` para más detalles sobre `verify-migration.php`.
+
 ## Article Structure
 
 Articles are stored in `content/collections/articles/` with the filename format:

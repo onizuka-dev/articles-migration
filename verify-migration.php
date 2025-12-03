@@ -1,0 +1,756 @@
+<?php
+
+/**
+ * Script de Verificación Automática Post-Migración
+ *
+ * Este script verifica automáticamente todos los puntos críticos que
+ * comúnmente requieren revisión después de migrar un artículo.
+ *
+ * Usage: php verify-migration.php [ARTICLE_FILE] [PRODUCTION_URL]
+ * Example: php verify-migration.php content/collections/articles/2024-11-19.similar-business-names-heres-what-to-do.md https://bizee.com/articles/similar-business-names-heres-what-to-do
+ */
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Symfony\Component\Yaml\Yaml;
+use Illuminate\Support\Facades\Storage;
+use Statamic\Facades\AssetContainer;
+
+// Load Laravel
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+$app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
+
+class MigrationVerifier
+{
+    private $articleFile;
+    private $productionUrl;
+    private $articleData;
+    private $productionHtml;
+    private $errors = [];
+    private $warnings = [];
+    private $info = [];
+
+    public function __construct($articleFile, $productionUrl)
+    {
+        $this->articleFile = $articleFile;
+        $this->productionUrl = $productionUrl;
+
+        if (!file_exists($articleFile)) {
+            throw new Exception("Article file not found: {$articleFile}");
+        }
+    }
+
+    public function verify(): array
+    {
+        echo "╔═══════════════════════════════════════════════════════════╗\n";
+        echo "║     Migration Verification Script                        ║\n";
+        echo "╚═══════════════════════════════════════════════════════════╝\n\n";
+
+        echo "Article: {$this->articleFile}\n";
+        echo "Production URL: {$this->productionUrl}\n\n";
+
+        // Load article
+        $this->loadArticle();
+
+        // Download production HTML
+        $this->downloadProductionHtml();
+
+        // Run all verifications
+        $this->verifyUUID();
+        $this->verifySEOFields();
+        $this->verifyImages();
+        $this->verifyLinks();
+        $this->verifyVideos();
+        $this->verifyCTAs();
+        $this->verifyTables();
+        $this->verifyRouting();
+        $this->verifyQuotes();
+        $this->verifyBlockStructure();
+        $this->verifyRichTextCombination();
+        $this->verifyIntroStructure();
+
+        // Print results
+        $this->printResults();
+
+        return [
+            'errors' => $this->errors,
+            'warnings' => $this->warnings,
+            'info' => $this->info,
+        ];
+    }
+
+    private function loadArticle(): void
+    {
+        $content = file_get_contents($this->articleFile);
+        $parts = explode('---', $content, 3);
+
+        if (count($parts) < 3) {
+            throw new Exception("Invalid article format");
+        }
+
+        $this->articleData = Yaml::parse($parts[1]);
+        $this->articleData['_content'] = $parts[2] ?? '';
+        $this->articleData['_yaml'] = $parts[1];
+    }
+
+    private function downloadProductionHtml(): void
+    {
+        echo "Downloading production HTML...\n";
+
+        $ch = curl_init($this->productionUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+        $this->productionHtml = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$this->productionHtml) {
+            $this->warnings[] = "Could not download production HTML (HTTP {$httpCode})";
+        }
+    }
+
+    // 1. Verify UUID is unique
+    private function verifyUUID(): void
+    {
+        echo "\n[1/12] Verifying UUID uniqueness...\n";
+
+        $uuid = $this->articleData['id'] ?? null;
+
+        if (!$uuid) {
+            $this->errors[] = "UUID is missing";
+            return;
+        }
+
+        // Check if UUID format is valid
+        if (!preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i', $uuid)) {
+            $this->errors[] = "UUID format is invalid: {$uuid}";
+            return;
+        }
+
+        // Check for duplicates in other articles
+        $articlesDir = dirname($this->articleFile);
+        $files = glob($articlesDir . '/*.md');
+        $duplicates = [];
+
+        foreach ($files as $file) {
+            if ($file === $this->articleFile) continue;
+
+            $content = file_get_contents($file);
+            if (preg_match('/^id:\s*' . preg_quote($uuid, '/') . '/m', $content)) {
+                $duplicates[] = basename($file);
+            }
+        }
+
+        if (!empty($duplicates)) {
+            $this->errors[] = "UUID is duplicated in: " . implode(', ', $duplicates);
+        } else {
+            echo "  ✓ UUID is unique\n";
+        }
+    }
+
+    // 2. Verify SEO fields
+    private function verifySEOFields(): void
+    {
+        echo "\n[2/12] Verifying SEO fields...\n";
+
+        $requiredFields = [
+            'seo_title',
+            'seo_meta_description',
+            'seo_custom_meta_title',
+            'seo_custom_meta_description',
+            'seo_canonical',
+            'seo_og_description',
+            'seo_og_title',
+            'seo_tw_title',
+            'seo_tw_description',
+        ];
+
+        $missing = [];
+        foreach ($requiredFields as $field) {
+            if (!isset($this->articleData[$field])) {
+                $missing[] = $field;
+            }
+        }
+
+        if (!empty($missing)) {
+            $this->errors[] = "Missing SEO fields: " . implode(', ', $missing);
+        } else {
+            echo "  ✓ All SEO fields present\n";
+        }
+
+        // Verify SEO data matches production
+        if ($this->productionHtml) {
+            // Extract title from production
+            if (preg_match('/<title>([^<]+)<\/title>/i', $this->productionHtml, $matches)) {
+                $productionTitle = html_entity_decode(trim($matches[1]), ENT_QUOTES | ENT_HTML5);
+                $articleTitle = $this->articleData['seo_custom_meta_title'] ?? '';
+
+                if ($productionTitle !== $articleTitle) {
+                    $this->warnings[] = "SEO title mismatch:\n    Production: {$productionTitle}\n    Article: {$articleTitle}";
+                }
+            }
+
+            // Extract meta description from production
+            if (preg_match('/<meta\s+name=["\']description["\']\s+content=["\']([^"\']+)["\']/i', $this->productionHtml, $matches)) {
+                $productionDesc = html_entity_decode(trim($matches[1]), ENT_QUOTES | ENT_HTML5);
+                $articleDesc = $this->articleData['seo_custom_meta_description'] ?? '';
+
+                if ($productionDesc !== $articleDesc) {
+                    $this->warnings[] = "SEO description mismatch:\n    Production: {$productionDesc}\n    Article: {$articleDesc}";
+                }
+            }
+        }
+    }
+
+    // 3. Verify images
+    private function verifyImages(): void
+    {
+        echo "\n[3/12] Verifying images...\n";
+
+        // Check featured_image
+        $featuredImage = $this->articleData['featured_image'] ?? null;
+        if (!$featuredImage) {
+            $this->errors[] = "featured_image is missing";
+        } else {
+            // Verify it's an S3 path, not local
+            if (strpos($featuredImage, 'public/assets/') !== false || strpos($featuredImage, '/tmp/') !== false) {
+                $this->errors[] = "featured_image appears to be local: {$featuredImage}";
+            } else {
+                echo "  ✓ Featured image: {$featuredImage}\n";
+            }
+        }
+
+        // Check content images in main_blocks
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+        $contentImages = [];
+
+        foreach ($mainBlocks as $block) {
+            if (($block['type'] ?? '') === 'article_image') {
+                $imagePath = $block['image'] ?? null;
+                if ($imagePath) {
+                    $contentImages[] = $imagePath;
+
+                    // Verify it's an S3 path
+                    if (strpos($imagePath, 'public/assets/') !== false || strpos($imagePath, '/tmp/') !== false) {
+                        $this->errors[] = "Content image appears to be local: {$imagePath}";
+                    }
+                }
+            }
+        }
+
+        if (!empty($contentImages)) {
+            echo "  ✓ Found " . count($contentImages) . " content image(s)\n";
+        }
+
+        // Check if production has images that are missing
+        if ($this->productionHtml) {
+            preg_match_all('/<img[^>]+(?:src|srcSet)=["\']([^"\']+)["\'][^>]*>/i', $this->productionHtml, $matches);
+            $productionImages = array_unique($matches[1]);
+
+            // Filter out decorative images
+            $contentImagePatterns = ['blog_top-image', 'BLOG_IMG', 'similar-business', 'statistics', 'table'];
+            $relevantImages = array_filter($productionImages, function($url) use ($contentImagePatterns) {
+                foreach ($contentImagePatterns as $pattern) {
+                    if (stripos($url, $pattern) !== false) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            if (count($relevantImages) > count($contentImages) + 1) { // +1 for featured
+                $this->warnings[] = "Production page may have more images than migrated article";
+            }
+        }
+    }
+
+    // 4. Verify links
+    private function verifyLinks(): void
+    {
+        echo "\n[4/12] Verifying links...\n";
+
+        // Extract links from article
+        $articleLinks = $this->extractLinksFromArticle();
+
+        // Extract links from production
+        $productionLinks = $this->extractLinksFromProduction();
+
+        // Get CTA URLs from article_button blocks (these shouldn't be counted as missing links)
+        $ctaUrls = [];
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+        foreach ($mainBlocks as $block) {
+            if (($block['type'] ?? '') === 'article_button') {
+                $url = $block['url'] ?? '';
+                if ($url) {
+                    // Normalize URL
+                    if ($url[0] === '/') {
+                        $url = 'https://bizee.com' . $url;
+                    }
+                    $ctaUrls[] = $url;
+                }
+            }
+        }
+
+        // Compare (exclude CTA URLs from missing links)
+        $missingLinks = array_diff($productionLinks, $articleLinks, $ctaUrls);
+        $extraLinks = array_diff($articleLinks, $productionLinks);
+
+        // Filter out external links from extra links (they may be valid additions)
+        $extraLinks = array_filter($extraLinks, function($link) {
+            return strpos($link, 'https://bizee.com') === 0 ||
+                   strpos($link, 'https://www.bizee.com') === 0;
+        });
+
+        if (!empty($missingLinks)) {
+            $this->errors[] = "Missing links (" . count($missingLinks) . "):\n    " . implode("\n    ", array_slice($missingLinks, 0, 10));
+            if (count($missingLinks) > 10) {
+                $this->errors[] = "    ... and " . (count($missingLinks) - 10) . " more";
+            }
+        }
+
+        if (!empty($extraLinks)) {
+            $this->warnings[] = "Extra internal links in article (" . count($extraLinks) . "):\n    " . implode("\n    ", array_slice($extraLinks, 0, 5));
+        }
+
+        if (empty($missingLinks) && empty($extraLinks)) {
+            echo "  ✓ All links match production\n";
+        } else {
+            echo "  ✓ Found " . count($articleLinks) . " links in article, " . count($productionLinks) . " in production\n";
+        }
+    }
+
+    private function extractLinksFromArticle(): array
+    {
+        $links = [];
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+
+        foreach ($mainBlocks as $block) {
+            if (($block['type'] ?? '') === 'rich_text') {
+                $content = $block['content'] ?? [];
+                $this->extractLinksFromBardContent($content, $links);
+            }
+        }
+
+        return array_unique($links);
+    }
+
+    private function extractLinksFromBardContent($content, &$links): void
+    {
+        foreach ($content as $item) {
+            if (isset($item['marks'])) {
+                foreach ($item['marks'] as $mark) {
+                    if (($mark['type'] ?? '') === 'link') {
+                        $href = $mark['attrs']['href'] ?? '';
+                        if ($href) {
+                            $links[] = $href;
+                        }
+                    }
+                }
+            }
+
+            if (isset($item['content'])) {
+                $this->extractLinksFromBardContent($item['content'], $links);
+            }
+        }
+    }
+
+    private function extractLinksFromProduction(): array
+    {
+        if (!$this->productionHtml) return [];
+
+        $links = [];
+
+        // Extract links from main content area
+        if (preg_match('/<main[^>]*>(.*?)<\/main>/is', $this->productionHtml, $mainMatch)) {
+            $mainContent = $mainMatch[1];
+
+            // Extract href attributes
+            preg_match_all('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>/i', $mainContent, $matches);
+
+            foreach ($matches[1] as $href) {
+                // Normalize internal links
+                if ($href[0] === '/') {
+                    $href = 'https://bizee.com' . $href;
+                }
+
+                // Filter out unwanted links
+                $exclude = ['#', 'javascript:', 'mailto:', 'tel:', '/author/', '/get-bizee-podcast',
+                           'sharer.php', 'share-offsite', 'intent/tweet', '_next', 'static',
+                           'twitter.com', 'facebook.com', 'linkedin.com', 'x.com'];
+
+                $shouldExclude = false;
+                foreach ($exclude as $pattern) {
+                    if (stripos($href, $pattern) !== false) {
+                        $shouldExclude = true;
+                        break;
+                    }
+                }
+
+                // Only include bizee.com internal links and external links that are clearly content links
+                if (!$shouldExclude) {
+                    if (strpos($href, 'https://bizee.com') === 0 ||
+                        strpos($href, 'https://www.bizee.com') === 0 ||
+                        strpos($href, 'https://www.uspto.gov') === 0 ||
+                        strpos($href, 'https://orders.bizee.com') === 0) {
+                        $links[] = $href;
+                    }
+                }
+            }
+        }
+
+        return array_unique($links);
+    }
+
+    // 5. Verify videos
+    private function verifyVideos(): void
+    {
+        echo "\n[5/12] Verifying videos...\n";
+
+        // Extract videos from article
+        $articleVideos = [];
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+
+        foreach ($mainBlocks as $block) {
+            if (($block['type'] ?? '') === 'video') {
+                $videoUrl = $block['video_url'] ?? '';
+                if ($videoUrl) {
+                    $articleVideos[] = $videoUrl;
+                }
+            }
+        }
+
+        // Extract videos from production
+        $productionVideos = [];
+        if ($this->productionHtml) {
+            // Look for Wistia videos
+            preg_match_all('/incfile\.wistia\.com\/medias\/([a-z0-9]+)/i', $this->productionHtml, $matches);
+            foreach ($matches[1] as $videoId) {
+                $productionVideos[] = "https://incfile.wistia.com/medias/{$videoId}";
+            }
+        }
+
+        $missingVideos = array_diff($productionVideos, $articleVideos);
+
+        if (!empty($missingVideos)) {
+            $this->errors[] = "Missing videos (" . count($missingVideos) . "):\n    " . implode("\n    ", $missingVideos);
+        }
+
+        if (empty($productionVideos) && empty($articleVideos)) {
+            echo "  ✓ No videos found (none expected)\n";
+        } elseif (empty($missingVideos)) {
+            echo "  ✓ All videos migrated (" . count($articleVideos) . ")\n";
+        }
+    }
+
+    // 6. Verify CTAs (article_button blocks)
+    private function verifyCTAs(): void
+    {
+        echo "\n[6/12] Verifying CTAs (article_button blocks)...\n";
+
+        $articleCTAs = [];
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+
+        foreach ($mainBlocks as $block) {
+            if (($block['type'] ?? '') === 'article_button') {
+                $label = $block['label'] ?? [];
+                $url = $block['url'] ?? '';
+
+                // Extract text from label
+                $text = '';
+                foreach ($label as $para) {
+                    foreach ($para['content'] ?? [] as $item) {
+                        if (isset($item['text'])) {
+                            $text .= $item['text'] . ' ';
+                        }
+                    }
+                }
+
+                $articleCTAs[] = [
+                    'text' => trim($text),
+                    'url' => $url,
+                ];
+            }
+        }
+
+        // Extract CTAs from production
+        $productionCTAs = [];
+        if ($this->productionHtml) {
+            // Look for CTA sections - search for common CTA patterns in the HTML structure
+            // CTAs are usually in specific div structures with classes like "CTASection", "rounded-8", etc.
+            if (preg_match_all('/<div[^>]*class="[^"]*(?:CTA|rounded-8|bg-primary-600)[^"]*"[^>]*>.*?<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)<\/a>.*?<\/div>/is', $this->productionHtml, $matches, PREG_SET_ORDER)) {
+                foreach ($matches as $match) {
+                    $url = $match[1];
+                    $text = strip_tags($match[2]);
+
+                    // Normalize URL
+                    if ($url[0] === '/') {
+                        $url = 'https://bizee.com' . $url;
+                    }
+
+                    // Only count if it looks like a CTA (has action words)
+                    if (preg_match('/\b(PROTECT|ORDER|GET|START|READ|LEARN|SIGN|JOIN|BUY|PURCHASE|CLICK|DOWNLOAD|SUBSCRIBE)\b/i', $text)) {
+                        $productionCTAs[] = [
+                            'text' => trim($text),
+                            'url' => $url,
+                        ];
+                    }
+                }
+            }
+        }
+
+        if (count($productionCTAs) > count($articleCTAs)) {
+            $this->warnings[] = "Production page may have more CTAs than migrated article. Found " . count($articleCTAs) . " in article, " . count($productionCTAs) . " in production.";
+        } else {
+            echo "  ✓ Found " . count($articleCTAs) . " CTA(s)\n";
+        }
+    }
+
+    // 7. Verify tables
+    private function verifyTables(): void
+    {
+        echo "\n[7/12] Verifying tables...\n";
+
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+        $tableBlocks = 0;
+
+        foreach ($mainBlocks as $block) {
+            if (($block['type'] ?? '') === 'info_table') {
+                $tableBlocks++;
+            }
+        }
+
+        // Check if production has tables that might need migration
+        if ($this->productionHtml) {
+            // Look for table-like structures in production
+            $tablePatterns = ['<table', 'border=', 'cellpadding', 'cellspacing'];
+            $hasTables = false;
+            foreach ($tablePatterns as $pattern) {
+                if (stripos($this->productionHtml, $pattern) !== false) {
+                    $hasTables = true;
+                    break;
+                }
+            }
+
+            if ($hasTables && $tableBlocks === 0) {
+                $this->warnings[] = "Production page may contain tables that need to be migrated as info_table blocks";
+            }
+        }
+
+        if ($tableBlocks > 0) {
+            echo "  ✓ Found {$tableBlocks} table(s) migrated as info_table blocks\n";
+        } else {
+            echo "  ✓ No tables found (none expected)\n";
+        }
+    }
+
+    // 8. Verify routing
+    private function verifyRouting(): void
+    {
+        echo "\n[8/12] Verifying routing...\n";
+
+        $slug = $this->articleData['slug_category'] ?? '';
+        $title = $this->articleData['title'] ?? '';
+
+        if (!$slug) {
+            $this->errors[] = "slug_category is missing";
+            return;
+        }
+
+        // Extract slug from filename
+        $filename = basename($this->articleFile);
+        preg_match('/\d{4}-\d{2}-\d{2}\.(.+)\.md/', $filename, $matches);
+        $articleSlug = $matches[1] ?? '';
+
+        if (!$articleSlug) {
+            $this->warnings[] = "Could not extract slug from filename";
+            return;
+        }
+
+        $expectedRoute = "/articles/{$slug}/{$articleSlug}";
+        $expectedRedirect = "/articles/{$articleSlug}";
+
+        // Check released-articles.php
+        $releasedArticlesFile = __DIR__ . '/../app/Routing/migration/released-articles.php';
+        if (file_exists($releasedArticlesFile)) {
+            $releasedContent = file_get_contents($releasedArticlesFile);
+            if (strpos($releasedContent, $expectedRoute) === false) {
+                $this->errors[] = "Route not found in released-articles.php: {$expectedRoute}";
+            } else {
+                echo "  ✓ Route found in released-articles.php\n";
+            }
+        }
+
+        // Check redirects.php
+        $redirectsFile = __DIR__ . '/../app/Routing/redirects.php';
+        if (file_exists($redirectsFile)) {
+            $redirectsContent = file_get_contents($redirectsFile);
+            if (strpos($redirectsContent, $expectedRedirect) === false) {
+                $this->warnings[] = "Redirect may be missing in redirects.php: {$expectedRedirect} => {$expectedRoute}";
+            } else {
+                echo "  ✓ Redirect found in redirects.php\n";
+            }
+        }
+    }
+
+    // 9. Verify quotes (double quotes rule)
+    private function verifyQuotes(): void
+    {
+        echo "\n[9/12] Verifying YAML quotes...\n";
+
+        $yamlContent = $this->articleData['_yaml'] ?? '';
+
+        // Check for single quotes in string values (should use double quotes)
+        // Look for patterns like: text: 'something'
+        if (preg_match_all("/^\s+(\w+):\s+'([^']+)'/m", $yamlContent, $matches)) {
+            $singleQuoted = [];
+            foreach ($matches[1] as $i => $key) {
+                $value = $matches[2][$i];
+                // Only warn if the value contains apostrophes (which would cause issues)
+                if (strpos($value, "'") !== false || preg_match("/\b(you'll|won't|can't|don't|it's|that's|here's|what's|there's|let's|I'm|we're|they're|she's|he's)\b/i", $value)) {
+                    $singleQuoted[] = "{$key}: '{$value}'";
+                }
+            }
+
+            if (!empty($singleQuoted)) {
+                $this->warnings[] = "Found single-quoted strings that may contain apostrophes:\n    " . implode("\n    ", array_slice($singleQuoted, 0, 5));
+            }
+        }
+
+        echo "  ✓ Quote format check completed\n";
+    }
+
+    // 10. Verify block structure (type and enabled)
+    private function verifyBlockStructure(): void
+    {
+        echo "\n[10/12] Verifying block structure...\n";
+
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+        $missingFields = [];
+
+        foreach ($mainBlocks as $index => $block) {
+            if (!isset($block['type'])) {
+                $missingFields[] = "Block #{$index} missing 'type' field";
+            }
+            if (!isset($block['enabled'])) {
+                $missingFields[] = "Block #{$index} missing 'enabled' field";
+            }
+        }
+
+        if (!empty($missingFields)) {
+            $this->errors[] = "Block structure issues:\n    " . implode("\n    ", $missingFields);
+        } else {
+            echo "  ✓ All blocks have type and enabled fields\n";
+        }
+    }
+
+    // 11. Verify rich_text blocks are combined
+    private function verifyRichTextCombination(): void
+    {
+        echo "\n[11/12] Verifying rich_text block combination...\n";
+
+        $mainBlocks = $this->articleData['main_blocks'] ?? [];
+        $consecutiveRichText = [];
+        $currentRichTextIndex = null;
+
+        foreach ($mainBlocks as $index => $block) {
+            $type = $block['type'] ?? '';
+
+            if ($type === 'rich_text') {
+                if ($currentRichTextIndex !== null && $currentRichTextIndex === $index - 1) {
+                    $consecutiveRichText[] = "Blocks #{$currentRichTextIndex} and #{$index}";
+                }
+                $currentRichTextIndex = $index;
+            } else {
+                $currentRichTextIndex = null;
+            }
+        }
+
+        if (!empty($consecutiveRichText)) {
+            $this->warnings[] = "Consecutive rich_text blocks found (should be combined):\n    " . implode("\n    ", array_slice($consecutiveRichText, 0, 5));
+        } else {
+            echo "  ✓ No consecutive rich_text blocks found\n";
+        }
+    }
+
+    // 12. Verify intro structure
+    private function verifyIntroStructure(): void
+    {
+        echo "\n[12/12] Verifying intro structure...\n";
+
+        $intro = $this->articleData['intro'] ?? [];
+
+        if (empty($intro)) {
+            $this->warnings[] = "intro is empty";
+        } else {
+            // Check if intro has more than one paragraph
+            $paragraphCount = 0;
+            foreach ($intro as $item) {
+                if (($item['type'] ?? '') === 'paragraph') {
+                    $paragraphCount++;
+                }
+            }
+
+            if ($paragraphCount > 1) {
+                $this->warnings[] = "intro contains {$paragraphCount} paragraphs (should only contain the first paragraph)";
+            } else {
+                echo "  ✓ Intro structure is correct\n";
+            }
+        }
+    }
+
+    private function printResults(): void
+    {
+        echo "\n" . str_repeat("=", 60) . "\n";
+        echo "VERIFICATION RESULTS\n";
+        echo str_repeat("=", 60) . "\n\n";
+
+        if (empty($this->errors) && empty($this->warnings)) {
+            echo "✅ ALL CHECKS PASSED!\n";
+            echo "\nThe article migration appears to be complete and correct.\n";
+        } else {
+            if (!empty($this->errors)) {
+                echo "❌ ERRORS (" . count($this->errors) . "):\n\n";
+                foreach ($this->errors as $i => $error) {
+                    echo "  " . ($i + 1) . ". {$error}\n\n";
+                }
+            }
+
+            if (!empty($this->warnings)) {
+                echo "⚠️  WARNINGS (" . count($this->warnings) . "):\n\n";
+                foreach ($this->warnings as $i => $warning) {
+                    echo "  " . ($i + 1) . ". {$warning}\n\n";
+                }
+            }
+        }
+
+        if (!empty($this->info)) {
+            echo "ℹ️  INFO:\n\n";
+            foreach ($this->info as $info) {
+                echo "  - {$info}\n";
+            }
+        }
+
+        echo "\n" . str_repeat("=", 60) . "\n";
+    }
+}
+
+// Main execution
+if ($argc < 3) {
+    echo "Usage: php verify-migration.php [ARTICLE_FILE] [PRODUCTION_URL]\n";
+    echo "Example: php verify-migration.php content/collections/articles/2024-11-19.similar-business-names-heres-what-to-do.md https://bizee.com/articles/similar-business-names-heres-what-to-do\n";
+    exit(1);
+}
+
+$articleFile = $argv[1];
+$productionUrl = $argv[2];
+
+try {
+    $verifier = new MigrationVerifier($articleFile, $productionUrl);
+    $results = $verifier->verify();
+
+    exit(empty($results['errors']) ? 0 : 1);
+} catch (Exception $e) {
+    echo "ERROR: {$e->getMessage()}\n";
+    exit(1);
+}

@@ -16,7 +16,50 @@ See `README-FORMATTING.md` and `README-STRUCTURE.md` for complete formatting gui
 
 ## Available Scripts
 
-### 1. `verify-and-fix-article.php`
+### 1. `verify-migration.php` ⚠️ **NUEVO - RECOMENDADO**
+**Purpose:** Verificación automática completa post-migración que revisa todos los puntos críticos que comúnmente requieren revisión.
+
+**Este script debe ejecutarse DESPUÉS de migrar un artículo para verificar automáticamente todos los problemas comunes.**
+
+**Parameters:**
+```bash
+php verify-migration.php [ARTICLE_FILE] [PRODUCTION_URL]
+```
+
+**Example:**
+```bash
+php verify-migration.php \
+  content/collections/articles/2024-11-19.similar-business-names-heres-what-to-do.md \
+  https://bizee.com/articles/similar-business-names-heres-what-to-do
+```
+
+**What it verifies:**
+
+1. **UUID único:** Verifica que el UUID no esté duplicado en otros artículos
+2. **Campos SEO:** Verifica que todos los campos SEO estén presentes y coincidan con producción
+3. **Imágenes:** Verifica que las imágenes estén en S3 (no locales) y que todas las imágenes de producción estén migradas
+4. **Links:** Compara los links del artículo migrado con los de producción y reporta los faltantes
+5. **Videos:** Verifica que todos los videos de Wistia de producción estén incluidos como bloques `video`
+6. **CTAs:** Verifica que los botones CTA (article_button) de producción estén incluidos
+7. **Tablas:** Verifica que las tablas estén migradas como bloques `info_table`
+8. **Routing:** Verifica que las rutas estén en `released-articles.php` y `redirects.php`
+9. **Comillas:** Verifica que los strings usen comillas dobles (no simples) cuando contengan apostrofes
+10. **Estructura de bloques:** Verifica que todos los bloques tengan `type` y `enabled`
+11. **Bloques rich_text:** Verifica que los bloques `rich_text` consecutivos estén combinados
+12. **Estructura de intro:** Verifica que solo el primer párrafo esté en `intro`
+
+**Output:**
+- ✅ **Errors:** Problemas críticos que DEBEN corregirse antes de completar la migración
+- ⚠️ **Warnings:** Problemas potenciales que deberían revisarse
+- ℹ️ **Info:** Información adicional sobre el artículo
+
+**Exit code:**
+- `0`: Sin errores (puede tener warnings)
+- `1`: Errores encontrados
+
+**⚠️ IMPORTANTE:** Este script NO corrige automáticamente los problemas, solo los reporta. Debes corregirlos manualmente o usar otros scripts específicos.
+
+### 2. `verify-and-fix-article.php`
 **Purpose:** Verifies and fixes migrated articles (buttons, images, category, URLs and redirects)
 
 **IMPORTANT:** Before running this script, ensure your article follows these structure rules:
