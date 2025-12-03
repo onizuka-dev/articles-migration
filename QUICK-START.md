@@ -16,7 +16,8 @@ php migrate-complete.php \
 
 Este script automatiza TODO:
 - ✅ Descarga el contenido HTML
-- ✅ Procesa y sube imágenes a S3
+- ✅ Procesa y sube imágenes a S3 usando Statamic API (genera thumbnails automáticamente)
+- ✅ Genera nombres descriptivos para imágenes hero basados en el contenido (ej: "woman-working-laptop")
 - ✅ Genera estructura básica del artículo
 - ✅ Aplica reglas de formato automáticamente
 
@@ -41,11 +42,11 @@ Antes de considerar la migración completa:
   - **PASO 4:** Si falta algún link, agrégalo inmediatamente
   - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN - NO PUEDE OMITIRSE**
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
+- [ ] ¿Las imágenes hero tienen nombres descriptivos? (ej: "woman-working-laptop" en lugar de solo usar el slug)
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
-- [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, `seo_og_image`, etc.)
+- [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
 - [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?
 - [ ] ¿El `seo_custom_meta_description` es la meta description exacta de producción?
-- [ ] ⚠️ **CRÍTICO:** ¿El campo `seo_og_image` contiene la misma imagen que `featured_image`? (debe ser exactamente la misma ruta)
 - [ ] ⚠️ **OBLIGATORIO:** ¿Agregaste las rutas en `app/Routing/migration/released-articles.php` y `app/Routing/redirects.php`?
   - **PASO 1:** Verifica si la ruta ya existe en `released-articles.php` (buscar por slug)
   - **PASO 2:** Si no existe, agrega `/articles/{slug_category}/{slug}` a `released-articles.php`

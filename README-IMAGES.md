@@ -22,16 +22,31 @@
 **SIEMPRE** ejecuta este script después de crear el archivo del artículo:
 
 ```bash
+# Opción 1: Script directo a S3 (más rápido, pero sin thumbnails)
 php download-and-upload-images-to-s3.php \
   https://bizee.com/articles/[slug] \
   [slug]
+
+# Opción 2: Script vía Statamic API (genera thumbnails automáticamente) ⭐ RECOMENDADO
+php upload-images-via-statamic.php \
+  https://bizee.com/articles/[slug] \
+  [slug] \
+  https://bizee.test/cp
 ```
 
-Este script:
+**Script `download-and-upload-images-to-s3.php`:**
 - Descarga las imágenes del artículo original
 - Las sube **directamente a S3** (no las guarda localmente de forma permanente)
 - Genera un mapeo de URLs originales → rutas S3
 - Las imágenes solo se guardan temporalmente durante el proceso de subida
+- ⚠️ **No genera thumbnails** en el CP
+
+**Script `upload-images-via-statamic.php` (⭐ RECOMENDADO):**
+- Descarga las imágenes del artículo original
+- **Genera nombres descriptivos** basados en el contenido de la imagen (ej: "woman-working-laptop" en lugar de solo usar el slug)
+- Las sube a S3 usando Statamic API
+- **Genera thumbnails automáticamente** en el CP
+- Las imágenes aparecen inmediatamente en el dashboard de Statamic
 
 **❌ INCORRECTO:**
 ```bash
@@ -67,12 +82,19 @@ Después de ejecutar el script, DEBES actualizar el artículo con las rutas de S
 
 Actualiza el campo `featured_image` en el frontmatter con la ruta de S3:
 ```yaml
-featured_image: articles/featured/[slug].webp
+featured_image: articles/featured/[descriptive-name].webp
 ```
 
-Ejemplo:
+**Nombres Descriptivos:** El script `upload-images-via-statamic.php` genera nombres descriptivos basados en el contenido de la imagen. Por ejemplo:
+- `woman-working-laptop.webp` (en lugar de solo `add-members-llc.webp`)
+- `afro-woman-with-glasses-smiling.webp`
+- `business-partnership.webp`
+
+Ejemplos:
 ```yaml
-featured_image: articles/featured/can-a-minor-own-a-business.webp
+featured_image: articles/featured/woman-working-laptop.webp
+featured_image: articles/featured/business-partnership.webp
+featured_image: articles/featured/afro-woman-with-glasses-smiling.webp
 ```
 
 **NOTA:** Esta ruta apunta directamente a S3. El sistema Statamic resolverá automáticamente la URL completa de S3.
@@ -126,13 +148,15 @@ Las imágenes deben seguir esta estructura:
 ```
 articles/
   featured/
-    [slug].webp          # Imagen destacada
+    [descriptive-name].webp          # Imagen destacada (nombres descriptivos)
   main-content/
     [slug]-[desc].webp   # Imágenes del contenido
 ```
 
 Ejemplos:
-- `articles/featured/can-a-minor-own-a-business.webp`
+- `articles/featured/woman-working-laptop.webp` (descriptivo)
+- `articles/featured/business-partnership.webp` (descriptivo)
+- `articles/featured/afro-woman-with-glasses-smiling.webp` (descriptivo)
 - `articles/main-content/can-a-minor-own-a-business-map.webp`
 
 ## Errores Comunes

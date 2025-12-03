@@ -25,8 +25,6 @@ seo_og_description: general
 seo_og_title: title
 seo_tw_title: title
 seo_tw_description: general
-seo_og_image:
-  - articles/featured/[slug].webp
 ```
 
 ### Descripción de Campos
@@ -40,7 +38,6 @@ seo_og_image:
 - **`seo_og_title`:** Siempre `title`
 - **`seo_tw_title`:** Siempre `title`
 - **`seo_tw_description`:** Siempre `general`
-- **`seo_og_image`:** **SIEMPRE** debe ser la misma imagen que `featured_image` (la imagen hero). Formato: array con un elemento que contiene la ruta de la imagen featured.
 
 ## Proceso Obligatorio de SEO
 
@@ -95,8 +92,6 @@ seo_og_description: general
 seo_og_title: title
 seo_tw_title: title
 seo_tw_description: general
-seo_og_image:
-  - articles/featured/[slug].webp
 intro:
   # ...
 ---
@@ -111,7 +106,6 @@ Antes de considerar una migración completa, verifica:
 - [ ] ¿Agregué todos los campos SEO al frontmatter?
 - [ ] ¿Los valores de `seo_custom_meta_title` y `seo_custom_meta_description` son exactos (no placeholders)?
 - [ ] ¿Los demás campos SEO tienen los valores correctos (`custom`, `none`, `general`, `title`)?
-- [ ] ⚠️ **CRÍTICO:** ¿El campo `seo_og_image` contiene la misma imagen que `featured_image`? (debe ser exactamente la misma ruta)
 
 ## Errores Comunes
 

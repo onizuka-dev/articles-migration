@@ -264,13 +264,11 @@ $text4 = formatTextForYaml("There is no 'official' way to have a company's code 
    - **MUST be called for every article migration**
    - Returns array with 'title' and 'description' keys
 
-7. **`generateSEOFields($productionTitle, $productionDescription, $featuredImage)`** ⚠️ MANDATORY
+7. **`generateSEOFields($productionTitle, $productionDescription)`** ⚠️ MANDATORY
    - Generates all required SEO fields for article frontmatter
    - Takes title and description from production page
-   - Takes featured image path (must be the same as `featured_image` field)
-   - Returns array with all SEO fields ready to add to frontmatter, including `seo_og_image`
+   - Returns array with all SEO fields ready to add to frontmatter
    - **MUST be called for every article migration**
-   - ⚠️ **CRÍTICO:** `seo_og_image` siempre debe ser la misma imagen que `featured_image`
 
 **Example:**
 ```php
@@ -280,13 +278,9 @@ $migrator = new ArticleMigrator();
 $seoData = $migrator->extractSEOFields('https://bizee.com/articles/bizee-premium-package');
 // Returns: ['title' => 'Here Is What Is Included In Bizee\'s Platinum Package', 'description' => 'The Platinum Package starts at...']
 
-// Featured image path (must match featured_image field)
-$featuredImage = 'articles/featured/bizee-premium-package.webp';
-
 // Generate SEO fields array for frontmatter
-$seoFields = $migrator->generateSEOFields($seoData['title'], $seoData['description'], $featuredImage);
-// Returns array with all SEO fields ready to add to article frontmatter, including:
-// - seo_og_image: ['articles/featured/bizee-premium-package.webp']
+$seoFields = $migrator->generateSEOFields($seoData['title'], $seoData['description']);
+// Returns array with all SEO fields ready to add to article frontmatter
 
 // Add to article frontmatter
 $articleFrontmatter = array_merge($baseFrontmatter, $seoFields);
