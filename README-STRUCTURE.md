@@ -194,8 +194,10 @@ Los siguientes componentes deben mantener los bloques `rich_text` separados:
 - `quote_box` - Cajas de cita
 - `article_key_takeaways` - Puntos clave
 - `bordered_container` - Contenedores con borde
-- `info_table` - Tablas de información
+- `info_table` - ⚠️ **IMPORTANTE:** Tablas de información (ver `README-TABLES.md` para guía completa)
 - `video` - Videos
+
+**Nota sobre tablas:** Cuando encuentres tablas en el contenido original, **SIEMPRE** debes convertirlas al bloque `info_table` en lugar de dejarlas como texto plano. Ver `README-TABLES.md` para instrucciones detalladas.
 
 ## Checklist de Estructura
 

@@ -57,6 +57,7 @@ Antes de considerar la migración completa:
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?
 - [ ] ¿Solo el primer párrafo está en `intro`?
+- [ ] ⚠️ **IMPORTANTE:** ¿Todas las tablas están convertidas al formato `info_table`? (ver `README-TABLES.md`)
 
 ## 📚 Documentación Completa
 
@@ -71,6 +72,7 @@ Antes de considerar la migración completa:
 - **`README-STRUCTURE.md`** - Reglas de estructura de contenido
 - **`README-LISTS.md`** - Manejo de listas
 - **`README-FORMATTING.md`** - Reglas de formato (quotes, links, line breaks)
+- **`README-TABLES.md`** - ⚠️ **IMPORTANTE:** Migración de tablas usando bloques `info_table`
 - **`README-IMAGES.md`** - ⚠️ **CRÍTICO:** Procesamiento obligatorio de imágenes
 - **`README-LINKS.md`** - ⚠️ **CRÍTICO:** Verificación obligatoria de links
 - **`README-VIDEOS.md`** - ⚠️ **CRÍTICO:** Migración obligatoria de videos con Wistia
