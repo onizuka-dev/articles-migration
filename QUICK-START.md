@@ -23,12 +23,22 @@ Este script automatiza TODO:
 
 ### 2. Revisar y Completar el Artículo
 
+**⚠️ CRITICAL - NO INVENTAR CONTENIDO:** **NEVER invent, create, or modify content that does not exist in the production page.** All content (headings, paragraphs, lists, descriptions, etc.) MUST be extracted exactly as it appears in production. **If you cannot find specific content in production, DO NOT create it.** This is a migration, not content creation. Always verify that:
+- All headings match production exactly
+- All paragraphs match production exactly
+- All numbered/bulleted items match production exactly
+- All descriptions and explanations match production exactly
+- If production has 40 items, the migrated article must have exactly 40 items (not 18, not 39, not 41)
+- If production says "X", the migrated article must say "X" (not "Y" or "similar to X")
+
+**This rule is CRITICAL and NON-NEGOTIABLE. Violating this rule will result in incorrect content being published.**
+
 El script genera una estructura base. Debes:
 - Revisar el contenido generado
 - ⚠️ **OBLIGATORIO:** Verificar que todos los links del contenido original estén incluidos en formato Bard (ver paso 3)
 - Verificar que todos los videos de Wistia estén incluidos como bloques `video`
 - Asegurar que las imágenes estén correctamente referenciadas
-- Completar cualquier contenido faltante
+- Completar cualquier contenido faltante (pero SOLO si existe en producción - nunca inventar)
 
 ### 2.5. ⚠️ **NUEVO:** Ejecutar Verificación Automática (Recomendado)
 

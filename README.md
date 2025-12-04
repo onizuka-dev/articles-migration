@@ -18,6 +18,16 @@ Before migrating, ensure you follow these structure and formatting rules:
 
 0. **UUID:** ⚠️ **CRITICAL** - Each article MUST have a unique UUID v4. **NEVER copy the UUID from another article.** If two articles share the same UUID, Statamic will only recognize one of them, causing the other to not appear in the dashboard. Always generate a new UUID for each article.
 
+**⚠️ CRITICAL - NO INVENTAR CONTENIDO:** **NEVER invent, create, or modify content that does not exist in the production page.** All content (headings, paragraphs, lists, descriptions, etc.) MUST be extracted exactly as it appears in production. **If you cannot find specific content in production, DO NOT create it.** This is a migration, not content creation. Always verify that:
+- All headings match production exactly
+- All paragraphs match production exactly
+- All numbered/bulleted items match production exactly
+- All descriptions and explanations match production exactly
+- If production has 40 items, the migrated article must have exactly 40 items (not 18, not 39, not 41)
+- If production says "X", the migrated article must say "X" (not "Y" or "similar to X")
+
+**This rule is CRITICAL and NON-NEGOTIABLE. Violating this rule will result in incorrect content being published.**
+
 1. **Intro:** Only the first paragraph goes in `intro`. All remaining content goes in `main_blocks`.
 2. **Rich Text Blocks:** ⚠️ **CRITICAL:** Combine consecutive `rich_text` blocks into one, unless separated by another component (button, image, etc.). This rule must be applied automatically during migration.
 3. **Lists:** All lists (including numbered lists) should be migrated as `bulletList`.
