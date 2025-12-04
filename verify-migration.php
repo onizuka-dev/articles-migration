@@ -57,6 +57,7 @@ class MigrationVerifier
 
         // Run all verifications
         $this->verifyUUID();
+        $this->verifyPublishedStatus();
         $this->verifySEOFields();
         $this->verifyImages();
         $this->verifyLinks();
@@ -68,6 +69,7 @@ class MigrationVerifier
         $this->verifyBlockStructure();
         $this->verifyRichTextCombination();
         $this->verifyIntroStructure();
+        $this->verifySubtitle();
 
         // Print results
         $this->printResults();
@@ -149,10 +151,28 @@ class MigrationVerifier
         }
     }
 
-    // 2. Verify SEO fields
+    // 2. Verify published status
+    private function verifyPublishedStatus(): void
+    {
+        echo "\n[2/13] Verifying published status...\n";
+
+        $published = $this->articleData['published'] ?? null;
+
+        if ($published === null) {
+            $this->errors[] = "published field is missing";
+        } elseif ($published === false) {
+            $this->errors[] = "published is set to false. Migrated articles MUST have published: true";
+        } elseif ($published === true) {
+            echo "  ✓ Article is published\n";
+        } else {
+            $this->warnings[] = "published has unexpected value: " . var_export($published, true);
+        }
+    }
+
+    // 3. Verify SEO fields
     private function verifySEOFields(): void
     {
-        echo "\n[2/12] Verifying SEO fields...\n";
+        echo "\n[3/13] Verifying SEO fields...\n";
 
         $requiredFields = [
             'seo_title',
@@ -206,7 +226,7 @@ class MigrationVerifier
     // 3. Verify images
     private function verifyImages(): void
     {
-        echo "\n[3/12] Verifying images...\n";
+        echo "\n[4/13] Verifying images...\n";
 
         // Check featured_image
         $featuredImage = $this->articleData['featured_image'] ?? null;
@@ -265,10 +285,10 @@ class MigrationVerifier
         }
     }
 
-    // 4. Verify links
+    // 5. Verify links
     private function verifyLinks(): void
     {
-        echo "\n[4/12] Verifying links...\n";
+        echo "\n[5/13] Verifying links (content only, excluding layout)...\n";
 
         // Extract links from article
         $articleLinks = $this->extractLinksFromArticle();
@@ -361,11 +381,37 @@ class MigrationVerifier
 
         $links = [];
 
-        // Extract links from main content area
-        if (preg_match('/<main[^>]*>(.*?)<\/main>/is', $this->productionHtml, $mainMatch)) {
+        // Extract links ONLY from the main article content area
+        // Exclude: header, footer, sidebar, featured articles section, navigation
+
+        // First, extract the main content area
+        if (preg_match('/<main[^>]*id=["\']main-webpage-content["\'][^>]*>(.*?)<\/main>/is', $this->productionHtml, $mainMatch)) {
             $mainContent = $mainMatch[1];
 
-            // Extract href attributes
+            // Remove header section if present
+            $mainContent = preg_replace('/<header[^>]*>.*?<\/header>/is', '', $mainContent);
+
+            // Remove footer section if present
+            $mainContent = preg_replace('/<footer[^>]*>.*?<\/footer>/is', '', $mainContent);
+
+            // Remove aside/sidebar sections (Featured Articles, etc.)
+            $mainContent = preg_replace('/<aside[^>]*>.*?<\/aside>/is', '', $mainContent);
+
+            // Remove navigation sections
+            $mainContent = preg_replace('/<nav[^>]*>.*?<\/nav>/is', '', $mainContent);
+
+            // Remove "Featured Articles" section - look for common patterns
+            $mainContent = preg_replace('/<div[^>]*class="[^"]*featured[^"]*article[^"]*"[^>]*>.*?<\/div>/is', '', $mainContent);
+            $mainContent = preg_replace('/<section[^>]*class="[^"]*featured[^"]*"[^>]*>.*?<\/section>/is', '', $mainContent);
+
+            // Remove podcast sections
+            $mainContent = preg_replace('/<div[^>]*class="[^"]*podcast[^"]*"[^>]*>.*?<\/div>/is', '', $mainContent);
+            $mainContent = preg_replace('/<section[^>]*class="[^"]*podcast[^"]*"[^>]*>.*?<\/section>/is', '', $mainContent);
+
+            // Remove author bio sections
+            $mainContent = preg_replace('/<div[^>]*class="[^"]*author[^"]*"[^>]*>.*?<\/div>/is', '', $mainContent);
+
+            // Now extract links from the cleaned content
             preg_match_all('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>/i', $mainContent, $matches);
 
             foreach ($matches[1] as $href) {
@@ -374,10 +420,27 @@ class MigrationVerifier
                     $href = 'https://bizee.com' . $href;
                 }
 
-                // Filter out unwanted links
-                $exclude = ['#', 'javascript:', 'mailto:', 'tel:', '/author/', '/get-bizee-podcast',
-                           'sharer.php', 'share-offsite', 'intent/tweet', '_next', 'static',
-                           'twitter.com', 'facebook.com', 'linkedin.com', 'x.com'];
+                // Filter out unwanted links (layout, social sharing, etc.)
+                $exclude = [
+                    '#',
+                    'javascript:',
+                    'mailto:',
+                    'tel:',
+                    '/author/',
+                    '/get-bizee-podcast',
+                    'sharer.php',
+                    'share-offsite',
+                    'intent/tweet',
+                    '_next',
+                    'static',
+                    'twitter.com',
+                    'facebook.com',
+                    'linkedin.com',
+                    'x.com',
+                    '/articles/austin-startup-scene',  // Featured article
+                    '/articles/how-to-start-a-consulting-business',  // Featured article
+                    '/articles/business-formation/can-cpa-set-up-llc-for-client',  // Featured article
+                ];
 
                 $shouldExclude = false;
                 foreach ($exclude as $pattern) {
@@ -392,7 +455,13 @@ class MigrationVerifier
                     if (strpos($href, 'https://bizee.com') === 0 ||
                         strpos($href, 'https://www.bizee.com') === 0 ||
                         strpos($href, 'https://www.uspto.gov') === 0 ||
-                        strpos($href, 'https://orders.bizee.com') === 0) {
+                        strpos($href, 'https://orders.bizee.com') === 0 ||
+                        strpos($href, 'https://www.care.com') === 0 ||
+                        strpos($href, 'https://www.taskrabbit.com') === 0 ||
+                        strpos($href, 'https://www.canva.com') === 0 ||
+                        strpos($href, 'https://kdp.amazon.com') === 0 ||
+                        strpos($href, 'https://www.shopify.com') === 0 ||
+                        strpos($href, 'https://www.amazon.com') === 0) {
                         $links[] = $href;
                     }
                 }
@@ -405,7 +474,7 @@ class MigrationVerifier
     // 5. Verify videos
     private function verifyVideos(): void
     {
-        echo "\n[5/12] Verifying videos...\n";
+        echo "\n[6/13] Verifying videos...\n";
 
         // Extract videos from article
         $articleVideos = [];
@@ -446,12 +515,13 @@ class MigrationVerifier
     // 6. Verify CTAs (article_button blocks)
     private function verifyCTAs(): void
     {
-        echo "\n[6/12] Verifying CTAs (article_button blocks)...\n";
+        echo "\n[7/14] Verifying CTAs (article_button blocks)...\n";
 
         $articleCTAs = [];
         $mainBlocks = $this->articleData['main_blocks'] ?? [];
+        $ctaPositions = [];
 
-        foreach ($mainBlocks as $block) {
+        foreach ($mainBlocks as $index => $block) {
             if (($block['type'] ?? '') === 'article_button') {
                 $label = $block['label'] ?? [];
                 $url = $block['url'] ?? '';
@@ -469,47 +539,182 @@ class MigrationVerifier
                 $articleCTAs[] = [
                     'text' => trim($text),
                     'url' => $url,
+                    'position' => $index,
                 ];
+
+                $ctaPositions[] = $index;
             }
         }
 
-        // Extract CTAs from production
+        // Extract CTAs from production (content only, excluding layout) with their positions with their positions
         $productionCTAs = [];
+        $productionCTAPositions = [];
         if ($this->productionHtml) {
-            // Look for CTA sections - search for common CTA patterns in the HTML structure
-            // CTAs are usually in specific div structures with classes like "CTASection", "rounded-8", etc.
-            if (preg_match_all('/<div[^>]*class="[^"]*(?:CTA|rounded-8|bg-primary-600)[^"]*"[^>]*>.*?<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)<\/a>.*?<\/div>/is', $this->productionHtml, $matches, PREG_SET_ORDER)) {
-                foreach ($matches as $match) {
-                    $url = $match[1];
-                    $text = strip_tags($match[2]);
+            // Extract main content area first
+            if (preg_match('/<main[^>]*id=["\']main-webpage-content["\'][^>]*>(.*?)<\/main>/is', $this->productionHtml, $mainMatch)) {
+                $mainContent = $mainMatch[1];
+
+                // Remove aside/sidebar sections (Featured Articles, etc.)
+                $mainContent = preg_replace('/<aside[^>]*>.*?<\/aside>/is', '', $mainContent);
+
+                // Split content into sections to determine relative positions
+                // Look for content blocks (rich-text sections) and CTAs
+                $contentBlocks = [];
+
+                // Find all rich-text sections (they have class "D9XFaD0g rich-t")
+                preg_match_all('/<div[^>]*class="[^"]*D9XFaD0g[^"]*rich-t[^"]*"[^>]*>(.*?)<\/div>/is', $mainContent, $richTextMatches, PREG_OFFSET_CAPTURE);
+
+                // Find all CTA sections
+                preg_match_all('/<div[^>]*class="[^"]*(?:rounded-8|bg-black|bg-primary-600)[^"]*"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>.*?<p[^>]*>(.*?)<\/p>.*?<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)<\/a>.*?<\/div>/is', $mainContent, $ctaMatches, PREG_OFFSET_CAPTURE);
+
+                // Build ordered list of content elements with their positions
+                $allElements = [];
+                foreach ($richTextMatches[0] as $match) {
+                    $allElements[] = ['type' => 'content', 'offset' => $match[1], 'content' => $match[0]];
+                }
+                foreach ($ctaMatches[0] as $index => $match) {
+                    $title = strip_tags($ctaMatches[1][$index][0] ?? '');
+                    $subtitle = strip_tags($ctaMatches[2][$index][0] ?? '');
+                    $url = $ctaMatches[3][$index][0] ?? '';
+                    $buttonText = strip_tags($ctaMatches[4][$index][0] ?? '');
 
                     // Normalize URL
-                    if ($url[0] === '/') {
+                    if ($url && $url[0] === '/') {
                         $url = 'https://bizee.com' . $url;
                     }
 
-                    // Only count if it looks like a CTA (has action words)
-                    if (preg_match('/\b(PROTECT|ORDER|GET|START|READ|LEARN|SIGN|JOIN|BUY|PURCHASE|CLICK|DOWNLOAD|SUBSCRIBE)\b/i', $text)) {
-                        $productionCTAs[] = [
-                            'text' => trim($text),
+                    // Only count if it has CTA characteristics
+                    if ($url && (
+                        stripos($title, 'Form Your LLC') !== false ||
+                        stripos($title, 'PROTECT') !== false ||
+                        stripos($title, 'ORDER') !== false ||
+                        stripos($buttonText, 'GET STARTED') !== false ||
+                        stripos($buttonText, 'PROTECT') !== false ||
+                        stripos($buttonText, 'ORDER') !== false ||
+                        stripos($url, 'orders.bizee.com') !== false ||
+                        stripos($url, 'trademark-name-search') !== false
+                    )) {
+                        $allElements[] = [
+                            'type' => 'cta',
+                            'offset' => $match[1],
+                            'title' => trim($title),
+                            'subtitle' => trim($subtitle),
+                            'button' => trim($buttonText),
                             'url' => $url,
                         ];
+                    }
+                }
+
+                // Sort by offset position
+                usort($allElements, function($a, $b) {
+                    return $a['offset'] <=> $b['offset'];
+                });
+
+                // Extract CTAs with their relative positions
+                $contentBlockIndex = 0;
+                foreach ($allElements as $element) {
+                    if ($element['type'] === 'content') {
+                        $contentBlockIndex++;
+                    } elseif ($element['type'] === 'cta') {
+                        $productionCTAs[] = [
+                            'title' => $element['title'],
+                            'subtitle' => $element['subtitle'],
+                            'button' => $element['button'],
+                            'url' => $element['url'],
+                            'position_after_content_block' => $contentBlockIndex, // Position after which content block
+                        ];
+                        $productionCTAPositions[] = $contentBlockIndex;
                     }
                 }
             }
         }
 
-        if (count($productionCTAs) > count($articleCTAs)) {
-            $this->warnings[] = "Production page may have more CTAs than migrated article. Found " . count($articleCTAs) . " in article, " . count($productionCTAs) . " in production.";
+        // Compare CTAs and verify positions
+        $missingCTAs = [];
+        $positionMismatches = [];
+
+        // Calculate article CTA positions relative to content blocks
+        $articleCTAPositions = [];
+        $contentBlockIndex = 0;
+        foreach ($mainBlocks as $index => $block) {
+            $type = $block['type'] ?? '';
+            if ($type === 'rich_text') {
+                $contentBlockIndex++;
+            } elseif ($type === 'article_button') {
+                $articleCTAPositions[] = [
+                    'block_index' => $index,
+                    'position_after_content_block' => $contentBlockIndex,
+                ];
+            }
+        }
+
+        // Match production CTAs with article CTAs by URL and verify positions
+        foreach ($productionCTAs as $prodIndex => $prodCTA) {
+            $found = false;
+            $matchedArticleIndex = null;
+
+            foreach ($articleCTAs as $articleIndex => $articleCTA) {
+                // Match by URL (most reliable)
+                if ($prodCTA['url'] === $articleCTA['url']) {
+                    $found = true;
+                    $matchedArticleIndex = $articleIndex;
+
+                    // Verify position matches
+                    $prodPosition = $prodCTA['position_after_content_block'] ?? null;
+                    $articlePosition = $articleCTAPositions[$articleIndex]['position_after_content_block'] ?? null;
+
+                    if ($prodPosition !== null && $articlePosition !== null && $prodPosition !== $articlePosition) {
+                        $positionMismatches[] = "CTA \"{$prodCTA['title']}\" is at position after content block #{$articlePosition} in article, but should be after content block #{$prodPosition} (as in production)";
+                    }
+                    break;
+                }
+                // Or match by title text
+                if (stripos($articleCTA['text'], $prodCTA['title']) !== false) {
+                    $found = true;
+                    $matchedArticleIndex = $articleIndex;
+
+                    // Verify position matches
+                    $prodPosition = $prodCTA['position_after_content_block'] ?? null;
+                    $articlePosition = $articleCTAPositions[$articleIndex]['position_after_content_block'] ?? null;
+
+                    if ($prodPosition !== null && $articlePosition !== null && $prodPosition !== $articlePosition) {
+                        $positionMismatches[] = "CTA \"{$prodCTA['title']}\" is at position after content block #{$articlePosition} in article, but should be after content block #{$prodPosition} (as in production)";
+                    }
+                    break;
+                }
+            }
+
+            if (!$found) {
+                $missingCTAs[] = $prodCTA;
+            }
+        }
+
+        if (!empty($missingCTAs)) {
+            $this->errors[] = "Missing CTAs (" . count($missingCTAs) . "):\n    " .
+                implode("\n    ", array_map(function($cta) {
+                    return "Title: \"{$cta['title']}\" | Button: \"{$cta['button']}\" | URL: {$cta['url']}";
+                }, array_slice($missingCTAs, 0, 5)));
+        }
+
+        if (!empty($positionMismatches)) {
+            $this->warnings[] = "CTA position mismatches:\n    " . implode("\n    ", $positionMismatches);
+        }
+
+        if (empty($missingCTAs) && empty($positionMismatches) && !empty($articleCTAs)) {
+            $positionInfo = count($ctaPositions) >= 2 ? " (positions: #" . ($ctaPositions[0] + 1) . " and #" . ($ctaPositions[count($ctaPositions)-1] + 1) . ")" : "";
+            echo "  ✓ Found " . count($articleCTAs) . " CTA(s) - all migrated and in correct positions{$positionInfo}\n";
+        } elseif (empty($articleCTAs) && empty($productionCTAs)) {
+            echo "  ✓ No CTAs found (none expected)\n";
         } else {
-            echo "  ✓ Found " . count($articleCTAs) . " CTA(s)\n";
+            $positionInfo = count($ctaPositions) >= 2 ? " (positions: #" . ($ctaPositions[0] + 1) . " and #" . ($ctaPositions[count($ctaPositions)-1] + 1) . ")" : "";
+            echo "  ✓ Found " . count($articleCTAs) . " CTA(s) in article, " . count($productionCTAs) . " in production{$positionInfo}\n";
         }
     }
 
     // 7. Verify tables
     private function verifyTables(): void
     {
-        echo "\n[7/12] Verifying tables...\n";
+        echo "\n[8/13] Verifying tables...\n";
 
         $mainBlocks = $this->articleData['main_blocks'] ?? [];
         $tableBlocks = 0;
@@ -547,7 +752,7 @@ class MigrationVerifier
     // 8. Verify routing
     private function verifyRouting(): void
     {
-        echo "\n[8/12] Verifying routing...\n";
+        echo "\n[9/13] Verifying routing...\n";
 
         $slug = $this->articleData['slug_category'] ?? '';
         $title = $this->articleData['title'] ?? '';
@@ -596,7 +801,7 @@ class MigrationVerifier
     // 9. Verify quotes (double quotes rule)
     private function verifyQuotes(): void
     {
-        echo "\n[9/12] Verifying YAML quotes...\n";
+        echo "\n[10/13] Verifying YAML quotes...\n";
 
         $yamlContent = $this->articleData['_yaml'] ?? '';
 
@@ -623,7 +828,7 @@ class MigrationVerifier
     // 10. Verify block structure (type and enabled)
     private function verifyBlockStructure(): void
     {
-        echo "\n[10/12] Verifying block structure...\n";
+        echo "\n[11/13] Verifying block structure...\n";
 
         $mainBlocks = $this->articleData['main_blocks'] ?? [];
         $missingFields = [];
@@ -647,7 +852,7 @@ class MigrationVerifier
     // 11. Verify rich_text blocks are combined
     private function verifyRichTextCombination(): void
     {
-        echo "\n[11/12] Verifying rich_text block combination...\n";
+        echo "\n[12/13] Verifying rich_text block combination...\n";
 
         $mainBlocks = $this->articleData['main_blocks'] ?? [];
         $consecutiveRichText = [];
@@ -676,7 +881,7 @@ class MigrationVerifier
     // 12. Verify intro structure
     private function verifyIntroStructure(): void
     {
-        echo "\n[12/12] Verifying intro structure...\n";
+        echo "\n[13/14] Verifying intro structure...\n";
 
         $intro = $this->articleData['intro'] ?? [];
 
@@ -696,6 +901,35 @@ class MigrationVerifier
             } else {
                 echo "  ✓ Intro structure is correct\n";
             }
+        }
+    }
+
+    // 13. Verify subtitle
+    private function verifySubtitle(): void
+    {
+        echo "\n[14/14] Verifying subtitle...\n";
+
+        $articleSubtitle = $this->articleData['subtitle'] ?? null;
+
+        // Extract subtitle from production HTML
+        $productionSubtitle = null;
+        if ($this->productionHtml) {
+            // Look for subtitle after the title - usually in a <p> tag with class "bOeUtvGC" or similar
+            if (preg_match('/<h1[^>]*class="[^"]*mxOiBotP[^"]*"[^>]*>(.*?)<\/h1>.*?<p[^>]*class="[^"]*bOeUtvGC[^"]*"[^>]*>(.*?)<\/p>/is', $this->productionHtml, $matches)) {
+                $productionSubtitle = trim(strip_tags($matches[2]));
+            }
+        }
+
+        if ($productionSubtitle && !$articleSubtitle) {
+            $this->errors[] = "Missing subtitle. Production has: \"{$productionSubtitle}\"";
+        } elseif ($articleSubtitle && $productionSubtitle && $articleSubtitle !== $productionSubtitle) {
+            $this->warnings[] = "Subtitle mismatch. Article: \"{$articleSubtitle}\" | Production: \"{$productionSubtitle}\"";
+        } elseif ($articleSubtitle && $productionSubtitle) {
+            echo "  ✓ Subtitle matches production: \"{$articleSubtitle}\"\n";
+        } elseif (!$productionSubtitle && !$articleSubtitle) {
+            echo "  ✓ No subtitle (none expected)\n";
+        } elseif ($articleSubtitle && !$productionSubtitle) {
+            $this->warnings[] = "Article has subtitle but production doesn't: \"{$articleSubtitle}\"";
         }
     }
 

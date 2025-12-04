@@ -4,7 +4,19 @@
 
 **Todas las migraciones de artículos DEBEN incluir todos los links del contenido original.** Esto no es opcional. Nunca omitas links del contenido original.
 
-**⚠️ VERIFICACIÓN OBLIGATORIA:** Al final de CADA migración, DEBES revisar el contenido original y comparar con el artículo migrado para asegurar que TODOS los links estén presentes. Esta verificación es parte del checklist principal y NO puede omitirse.
+**⚠️ IMPORTANTE:** Solo se deben verificar links que están dentro del **contenido principal del artículo**. Se deben **excluir** links de:
+- Header/Navegación
+- Footer
+- Sección de "Featured Articles" (artículos relacionados)
+- Sidebar
+- Sección de Podcast
+- Autor bio
+- Botones de compartir en redes sociales
+- Cualquier otro elemento del layout
+
+Solo los links que aparecen en el contenido migrado del artículo deben ser verificados.
+
+**⚠️ VERIFICACIÓN OBLIGATORIA:** Al final de CADA migración, DEBES revisar el contenido original y comparar con el artículo migrado para asegurar que TODOS los links del contenido estén presentes. Esta verificación es parte del checklist principal y NO puede omitirse.
 
 ## ¿Por qué es obligatorio?
 

@@ -1,5 +1,20 @@
 # Guide for Creating Buttons (article_button)
 
+## ⚠️ REGLA CRÍTICA: CTAs Deben Ser Migrados
+
+**Todos los CTAs (Call-to-Action buttons) del contenido del artículo DEBEN ser migrados como bloques `article_button`.** Los CTAs pueden aparecer en dos variantes:
+- **CTAs negros** (`bg-black`) con texto blanco
+- **CTAs blancos/naranjas** (`bg-primary-600`) con texto blanco
+
+**⚠️ IMPORTANTE:** Solo migrar CTAs que están en el **contenido principal del artículo**, NO los que están en el layout (header, footer, sidebar, featured articles).
+
+**⚠️ POSICIÓN CRÍTICA:** Los CTAs deben estar en las **mismas posiciones relativas** que en producción. Cada artículo puede tener los CTAs en posiciones diferentes según su contenido:
+- Analiza el HTML de producción para determinar después de qué bloque de contenido está cada CTA.
+- Coloca cada CTA en el artículo migrado en la misma posición relativa que en producción.
+- El script `verify-migration.php` compara automáticamente las posiciones y reporta si hay diferencias.
+
+**⚠️ VERIFICACIÓN OBLIGATORIA:** Al final de CADA migración, DEBES revisar el contenido original y asegurar que TODOS los CTAs del contenido estén migrados como bloques `article_button` y en las posiciones correctas. Esta verificación es parte del checklist principal.
+
 ## Standard Format
 
 All buttons must be created with the following format:

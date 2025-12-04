@@ -61,14 +61,21 @@ Este script verifica automáticamente:
 Antes de considerar la migración completa:
 
 - [ ] ⚠️ **CRÍTICO:** ¿El UUID del artículo es único? (NUNCA copiar el UUID de otro artículo. Si dos artículos comparten el mismo UUID, Statamic solo reconocerá uno y el otro no aparecerá en el dashboard)
+- [ ] ⚠️ **IMPORTANTE:** ¿El artículo tiene subtitle en producción? Si aparece un texto justo después del título en la página de producción, DEBE estar incluido como campo `subtitle` en el frontmatter del artículo migrado.
 - [ ] ⚠️ **OBLIGATORIO:** ¿Revisaste que TODOS los links del contenido original están incluidos en formato Bard?
   - **PASO 1:** Abre la página de producción en el navegador
-  - **PASO 2:** Identifica TODOS los links visibles en el contenido principal
+  - **PASO 2:** Identifica TODOS los links visibles **SOLO en el contenido principal** (excluir header, footer, featured articles, sidebar, podcast, etc.)
   - **PASO 3:** Compara uno por uno con el artículo migrado
-  - **PASO 4:** Si falta algún link, agrégalo inmediatamente
+  - **PASO 4:** Si falta algún link del contenido, agrégalo inmediatamente
   - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN - NO PUEDE OMITIRSE**
+  - **⚠️ IMPORTANTE:** Solo verificar links del contenido del artículo, NO del layout
 - [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
 - [ ] ¿Las imágenes hero tienen nombres descriptivos? (ej: "woman-working-laptop" en lugar de solo usar el slug)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Todos los CTAs (article_button) del contenido están incluidos? (pueden ser negros o blancos/naranjas)
+  - **PASO 1:** Revisa el contenido original y busca todos los CTAs (banners con botones como "Form Your LLC", "PROTECT YOUR BUSINESS", etc.)
+  - **PASO 2:** Verifica que cada CTA esté migrado como bloque `article_button` en `main_blocks`
+  - **PASO 3:** Excluir CTAs del layout (header, footer, sidebar)
+  - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
 - [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
 - [ ] ¿El `seo_custom_meta_title` es el título exacto del tag `<title>` de producción?
@@ -79,6 +86,7 @@ Antes de considerar la migración completa:
   - **PASO 3:** Verifica si el redirect ya existe en `redirects.php` (buscar por slug original)
   - **PASO 4:** Si no existe, agrega `/articles/{old-slug}` => `/articles/{slug_category}/{slug}` a `redirects.php`
   - **⚠️ ESTE PASO ES OBLIGATORIO Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
+- [ ] ⚠️ **OBLIGATORIO:** ¿El artículo tiene `published: true`? (NUNCA usar `published: false` para artículos migrados)
 - [ ] ⚠️ **CRÍTICO:** ¿TODOS los strings usan comillas dobles (`"`)? (NUNCA usar comillas simples `'`; escapar comillas dobles internas con `\"`; ⚠️ **NO escapar comillas simples cuando usas comillas dobles como wrapper**)
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?

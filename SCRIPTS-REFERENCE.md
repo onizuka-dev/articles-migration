@@ -40,7 +40,7 @@ php verify-migration.php \
 3. **Imágenes:** Verifica que las imágenes estén en S3 (no locales) y que todas las imágenes de producción estén migradas
 4. **Links:** Compara los links del artículo migrado con los de producción y reporta los faltantes
 5. **Videos:** Verifica que todos los videos de Wistia de producción estén incluidos como bloques `video`
-6. **CTAs:** Verifica que los botones CTA (article_button) de producción estén incluidos
+6. **CTAs:** Verifica que los botones CTA (article_button) de producción estén incluidos y en las mismas posiciones relativas que en producción
 7. **Tablas:** Verifica que las tablas estén migradas como bloques `info_table`
 8. **Routing:** Verifica que las rutas estén en `released-articles.php` y `redirects.php`
 9. **Comillas:** Verifica que los strings usen comillas dobles (no simples) cuando contengan apostrofes
