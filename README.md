@@ -6,6 +6,18 @@ This directory contains scripts and documentation for migrating articles to the 
 
 **Para empezar rápidamente, lee primero:** [`QUICK-START.md`](./QUICK-START.md)
 
+## 🤖 Instrucciones para Cursor AI
+
+**Si vas a usar Cursor AI con un agente para migrar artículos:**
+- 📋 **[`CURSOR-AGENT-INSTRUCTIONS.md`](./CURSOR-AGENT-INSTRUCTIONS.md)** - Instrucciones completas para configurar y usar el agente de Cursor
+
+Este documento contiene:
+- Instrucciones iniciales para el agente
+- Proceso paso a paso para migraciones
+- Checklists de verificación
+- Instrucciones específicas para imágenes, links, videos, etc.
+- Ejemplos de conversación
+
 ## ⚠️ CHECKLIST CRÍTICO - LEE PRIMERO
 
 **ANTES de empezar cualquier migración, revisa el checklist crítico:**
