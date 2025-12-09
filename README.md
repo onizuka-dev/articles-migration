@@ -6,6 +6,20 @@ This directory contains scripts and documentation for migrating articles to the 
 
 **Para empezar rápidamente, lee primero:** [`QUICK-START.md`](./QUICK-START.md)
 
+## ⚠️ CHECKLIST CRÍTICO - LEE PRIMERO
+
+**ANTES de empezar cualquier migración, revisa el checklist crítico:**
+- 📋 **[`CRITICAL-CHECKLIST.md`](./CRITICAL-CHECKLIST.md)** - ⚠️ **OBLIGATORIO LEER** - Puntos críticos que NO pueden olvidarse
+
+Este documento contiene los 7 puntos críticos que DEBES verificar en CADA migración:
+1. ⚠️ Imágenes del contenido (obligatorio subir todas)
+2. ⚠️ Verificación de links (obligatorio verificar todos)
+3. ⚠️ CTAs (article_button) posicionados correctamente
+4. ⚠️ NO inventar contenido (siempre exacto de producción)
+5. ⚠️ Status: hold=true, published=true
+6. ⚠️ Campos SEO completos
+7. ⚠️ Key Takeaways usar fieldset article_key_takeaways
+
 Este es el entry point principal que contiene:
 - Proceso rápido de migración (3 pasos)
 - Reglas críticas que nunca olvidar
@@ -42,6 +56,8 @@ Before migrating, ensure you follow these structure and formatting rules:
 12. **Routing:** ⚠️ **MANDATORY** - All migrated articles MUST have their routes added to `app/Routing/migration/released-articles.php` and redirects added to `app/Routing/redirects.php`. The route format is `/articles/{slug_category}/{slug}`. The redirect format is `/articles/{old-slug}` => `/articles/{slug_category}/{slug}`. **Always verify if routes already exist before adding.** **Never skip routing.** This step is part of the main checklist.
 13. **Published Status:** ⚠️ **MANDATORY** - All migrated articles MUST have `published: true` in the frontmatter. **Never set `published: false` for migrated articles.** This ensures the articles are visible and accessible after migration.
 14. **Subtitle:** ⚠️ **IMPORTANT** - If the article has a subtitle in production (appears right after the title), it MUST be included in the migrated article as the `subtitle` field in the frontmatter. The subtitle appears just after the title in the production page. **Always check if a subtitle exists in production and include it if present.**
+15. **Key Takeaways:** ⚠️ **MANDATORY** - When an article contains a "Key Takeaways:" section at the end, it MUST be migrated using the `article_key_takeaways` fieldset in `after_blocks` (NOT in `main_blocks`). The structure is: `id` (unique UUID), `version: article_key_takeaways_1`, `heading: 'Key Takeaways'`, `article_key_takeaways_version: rich_text_1`, `article_key_takeaways_content` (with bulletList or paragraphs), `type: article_key_takeaways`, `enabled: true`. **Never include "Key Takeaways:" as part of the main content in `main_blocks`.**
+16. **Quote Box:** ⚠️ **MANDATORY** - When you detect a quote in the content with `style="--quote-box-color:var(--primary-600)"`, it MUST be migrated using the `quote_box` fieldset in `main_blocks` (NOT as a regular paragraph in `rich_text`). The structure is: `id` (unique UUID), `version: quote_box_1`, `content` (with paragraph containing the quote text), `type: quote_box`, `enabled: true`. **Never leave quotes as regular paragraphs in `rich_text` blocks.**
 
 **📚 Documentación Completa:**
 - **`QUICK-START.md`** - 🚀 Entry point principal (empieza aquí)

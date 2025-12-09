@@ -2,6 +2,20 @@
 
 **Este es el entry point principal para migrar artículos.** Úsalo como referencia rápida y punto de partida.
 
+## ⚠️ CHECKLIST CRÍTICO - LEE PRIMERO
+
+**ANTES de empezar cualquier migración, revisa el checklist crítico:**
+- 📋 **[`CRITICAL-CHECKLIST.md`](./CRITICAL-CHECKLIST.md)** - ⚠️ **OBLIGATORIO LEER** - Puntos críticos que NO pueden olvidarse
+
+Este documento contiene los 7 puntos críticos que DEBES verificar en CADA migración:
+1. ⚠️ Imágenes del contenido (obligatorio subir todas)
+2. ⚠️ Verificación de links (obligatorio verificar todos)
+3. ⚠️ CTAs (article_button) posicionados correctamente
+4. ⚠️ NO inventar contenido (siempre exacto de producción)
+5. ⚠️ Status: hold=true, published=true
+6. ⚠️ Campos SEO completos
+7. ⚠️ Key Takeaways usar fieldset article_key_takeaways
+
 ## ⚡ Proceso Rápido (3 Pasos)
 
 ### 1. Ejecutar Script de Migración Completa (Recomendado)
@@ -72,6 +86,11 @@ Antes de considerar la migración completa:
 
 - [ ] ⚠️ **CRÍTICO:** ¿El UUID del artículo es único? (NUNCA copiar el UUID de otro artículo. Si dos artículos comparten el mismo UUID, Statamic solo reconocerá uno y el otro no aparecerá en el dashboard)
 - [ ] ⚠️ **IMPORTANTE:** ¿El artículo tiene subtitle en producción? Si aparece un texto justo después del título en la página de producción, DEBE estar incluido como campo `subtitle` en el frontmatter del artículo migrado.
+- [ ] ⚠️ **OBLIGATORIO:** ¿TODAS las imágenes del contenido están subidas a S3 y referenciadas correctamente?
+  - **PASO 1:** Verifica que la featured image esté en `articles/featured/`
+  - **PASO 2:** Verifica que TODAS las imágenes del contenido estén en `articles/main-content/`
+  - **PASO 3:** Verifica que todas aparezcan como bloques `article_image` en el artículo
+  - **⚠️ CRÍTICO:** NO solo la featured image - TODAS las imágenes del contenido deben estar subidas
 - [ ] ⚠️ **OBLIGATORIO:** ¿Revisaste que TODOS los links del contenido original están incluidos en formato Bard?
   - **PASO 1:** Abre la página de producción en el navegador
   - **PASO 2:** Identifica TODOS los links visibles **SOLO en el contenido principal** (excluir header, footer, featured articles, sidebar, podcast, etc.)
@@ -79,12 +98,11 @@ Antes de considerar la migración completa:
   - **PASO 4:** Si falta algún link del contenido, agrégalo inmediatamente
   - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN - NO PUEDE OMITIRSE**
   - **⚠️ IMPORTANTE:** Solo verificar links del contenido del artículo, NO del layout
-- [ ] ¿Todas las imágenes están en S3 y referenciadas correctamente?
-- [ ] ¿Las imágenes hero tienen nombres descriptivos? (ej: "woman-working-laptop" en lugar de solo usar el slug)
-- [ ] ⚠️ **OBLIGATORIO:** ¿Todos los CTAs (article_button) del contenido están incluidos? (pueden ser negros o blancos/naranjas)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Todos los CTAs (article_button) del contenido están incluidos y en la posición correcta?
   - **PASO 1:** Revisa el contenido original y busca todos los CTAs (banners con botones como "Form Your LLC", "PROTECT YOUR BUSINESS", etc.)
   - **PASO 2:** Verifica que cada CTA esté migrado como bloque `article_button` en `main_blocks`
-  - **PASO 3:** Excluir CTAs del layout (header, footer, sidebar)
+  - **PASO 3:** Verifica que estén en la posición correcta (donde aparecen en producción)
+  - **PASO 4:** Excluir CTAs del layout (header, footer, sidebar)
   - **⚠️ ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
 - [ ] ¿Todos los videos de Wistia están incluidos como bloques `video` en `main_blocks`?
 - [ ] ¿Los campos SEO están agregados? (`seo_title`, `seo_meta_description`, `seo_custom_meta_title`, `seo_custom_meta_description`, etc.)
@@ -96,7 +114,9 @@ Antes de considerar la migración completa:
   - **PASO 3:** Verifica si el redirect ya existe en `redirects.php` (buscar por slug original)
   - **PASO 4:** Si no existe, agrega `/articles/{old-slug}` => `/articles/{slug_category}/{slug}` a `redirects.php`
   - **⚠️ ESTE PASO ES OBLIGATORIO Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
-- [ ] ⚠️ **OBLIGATORIO:** ¿El artículo tiene `published: true`? (NUNCA usar `published: false` para artículos migrados)
+- [ ] ⚠️ **OBLIGATORIO:** ¿El artículo tiene `hold: true` y `published: true`? (AMBOS deben estar presentes, NUNCA usar `published: false` para artículos migrados)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Si el artículo tiene "Key Takeaways:" al final, está migrado usando el fieldset `article_key_takeaways` en `after_blocks`? (NUNCA incluir "Key Takeaways:" como parte del contenido en `main_blocks`)
+- [ ] ⚠️ **OBLIGATORIO:** ¿Si hay quotes con `style="--quote-box-color:var(--primary-600)"`, están migrados como bloques `quote_box`? (NUNCA dejar quotes como párrafos normales en `rich_text`)
 - [ ] ⚠️ **CRÍTICO:** ¿TODOS los strings usan comillas dobles (`"`)? (NUNCA usar comillas simples `'`; escapar comillas dobles internas con `\"`; ⚠️ **NO escapar comillas simples cuando usas comillas dobles como wrapper**)
 - [ ] ¿Los saltos de línea son correctos? (exactamente 1 `hardBreak` entre párrafos, headings y listas)
 - [ ] ¿Los bloques `rich_text` consecutivos están combinados?

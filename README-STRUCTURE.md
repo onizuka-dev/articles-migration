@@ -191,7 +191,7 @@ Los siguientes componentes deben mantener los bloques `rich_text` separados:
 
 - `article_button` - Botones/CTAs
 - `article_image` - Imágenes
-- `quote_box` - Cajas de cita
+- `quote_box` - ⚠️ **IMPORTANTE:** Cajas de cita (ver sección 5 para guía completa)
 - `article_key_takeaways` - Puntos clave
 - `bordered_container` - Contenedores con borde
 - `info_table` - ⚠️ **IMPORTANTE:** Tablas de información (ver `README-TABLES.md` para guía completa)
@@ -289,3 +289,203 @@ main_blocks:
     type: rich_text
     enabled: true
 ```
+
+### 4. After Blocks - Key Takeaways ⚠️ REGLA CRÍTICA
+
+**Regla:** Cuando un artículo contiene una sección "Key Takeaways:" al final, **DEBE** migrarse usando el fieldset `article_key_takeaways` en `after_blocks` (NO en `main_blocks`).
+
+**⚠️ IMPORTANTE:**
+- **NUNCA** incluir "Key Takeaways:" como parte del contenido en `main_blocks`
+- **SIEMPRE** usar el fieldset `article_key_takeaways` en `after_blocks`
+- El contenido puede ser una `bulletList` o párrafos con bullets (formato `•`)
+- Generar un UUID único para el bloque `id`
+
+**Estructura Requerida:**
+```yaml
+after_blocks:
+  -
+    id: [UUID único generado]
+    version: article_key_takeaways_1
+    heading: 'Key Takeaways'
+    article_key_takeaways_version: rich_text_1
+    article_key_takeaways_content:
+      -
+        type: bulletList
+        content:
+          -
+            type: listItem
+            content:
+              -
+                type: paragraph
+                content:
+                  -
+                    type: text
+                    text: 'Primer takeaway...'
+          -
+            type: listItem
+            content:
+              -
+                type: paragraph
+                content:
+                  -
+                    type: text
+                    text: 'Segundo takeaway...'
+    type: article_key_takeaways
+    enabled: true
+```
+
+**Ejemplo Incorrecto (Key Takeaways en main_blocks):**
+```yaml
+main_blocks:
+  -
+    id: main1
+    version: rich_text_1
+    content:
+      -
+        type: heading
+        attrs:
+          level: 3
+        content:
+          -
+            type: text
+            text: 'Key Takeaways:'
+      -
+        type: bulletList
+        content:
+          # ... takeaways aquí
+    type: rich_text
+    enabled: true
+```
+
+**Ejemplo Correcto (Key Takeaways en after_blocks):**
+```yaml
+main_blocks:
+  -
+    id: main1
+    version: rich_text_1
+    content:
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'Contenido del artículo...'
+    type: rich_text
+    enabled: true
+after_blocks:
+  -
+    id: takeaways1
+    version: article_key_takeaways_1
+    heading: 'Key Takeaways'
+    article_key_takeaways_version: rich_text_1
+    article_key_takeaways_content:
+      -
+        type: bulletList
+        content:
+          -
+            type: listItem
+            content:
+              -
+                type: paragraph
+                content:
+                  -
+                    type: text
+                    text: 'Primer takeaway...'
+    type: article_key_takeaways
+    enabled: true
+```
+
+**Nota:** El fieldset `article_key_takeaways` está ubicado en `resources/fieldsets/article_key_takeaways.yaml` y debe usarse siempre que aparezca "Key Takeaways:" en el contenido del artículo.
+
+### 5. Quote Box - Quotes con Estilo Especial ⚠️ REGLA CRÍTICA
+
+**Regla:** Cuando detectes un quote en el contenido con `style="--quote-box-color:var(--primary-600)"`, **DEBE** migrarse usando el fieldset `quote_box` en `main_blocks` (NO como párrafo normal en `rich_text`).
+
+**⚠️ IMPORTANTE:**
+- **NUNCA** dejar quotes como párrafos normales en bloques `rich_text`
+- **SIEMPRE** usar el fieldset `quote_box` cuando detectes el estilo `--quote-box-color:var(--primary-600)`
+- Los quotes deben estar en la posición correcta donde aparecen en producción
+- Generar un UUID único para el bloque `id`
+
+**Estructura Requerida:**
+```yaml
+main_blocks:
+  -
+    id: [UUID único generado]
+    version: quote_box_1
+    content:
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'Texto del quote aquí...'
+    type: quote_box
+    enabled: true
+```
+
+**Ejemplo Incorrecto (Quote como párrafo normal):**
+```yaml
+main_blocks:
+  -
+    id: main1
+    version: rich_text_1
+    content:
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'Texto normal del artículo...'
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'By starting or investing in a business...'  # ❌ Quote como párrafo normal
+    type: rich_text
+    enabled: true
+```
+
+**Ejemplo Correcto (Quote como bloque quote_box):**
+```yaml
+main_blocks:
+  -
+    id: main1
+    version: rich_text_1
+    content:
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'Texto normal del artículo...'
+    type: rich_text
+    enabled: true
+  -
+    id: quote1
+    version: quote_box_1
+    content:
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'By starting or investing in a business in these high-growth sectors, you can take advantage of substantial growth potential and generate long-term returns.'
+    type: quote_box
+    enabled: true
+  -
+    id: main2
+    version: rich_text_1
+    content:
+      -
+        type: paragraph
+        content:
+          -
+            type: text
+            text: 'Continuación del contenido...'
+    type: rich_text
+    enabled: true
+```
+
+**Nota:** El fieldset `quote_box` está ubicado en `resources/fieldsets/quote_box.yaml` y debe usarse siempre que detectes un quote con el estilo `--quote-box-color:var(--primary-600)` en el contenido HTML de producción.
