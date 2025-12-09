@@ -33,10 +33,10 @@ Tienes acceso a la carpeta `articles-migration/` que contiene toda la documentac
 2. **NO INVENTAR CONTENIDO:** ⚠️ CRÍTICO - NUNCA inventes, crees o modifiques contenido que no existe en la página de producción. TODO el contenido (títulos, párrafos, listas, descripciones) DEBE ser exacto de producción. Si no encuentras algo en producción, NO lo crees.
 
 3. **IMÁGENES EN S3:** ⚠️ OBLIGATORIO - TODAS las imágenes (featured + content images) DEBEN estar subidas a S3. NUNCA dejes imágenes locales. Rutas correctas:
-   - Featured: `articles/featured/[nombre-descriptivo].webp`
-   - Content: `articles/main-content/[nombre-descriptivo].webp`
+   - Featured (hero): `articles/featured/[nombre-descriptivo].webp` - El nombre DEBE ser acorde al contenido de la imagen (ej: "woman-standing-in-cattle-farm.webp", "man-using-macbook-cafe.webp")
+   - Content: `articles/main-content/[nombre-descriptivo].webp` - El nombre DEBE ser acorde al contenido de la imagen
 
-4. **VERIFICACIÓN DE LINKS:** ⚠️ OBLIGATORIO - Al final de CADA migración, debes verificar que TODOS los links del contenido principal estén incluidos. Solo links del contenido, NO del layout (header, footer, sidebar, featured articles, podcast).
+4. **VERIFICACIÓN DE LINKS:** ⚠️ OBLIGATORIO - Al final de CADA migración, debes verificar que TODOS los links del contenido principal estén incluidos. Solo links del contenido, NO del layout (header, footer, sidebar, featured articles, podcast). **NUNCA inventes URLs de links** - TODOS los links deben ser exactamente como están en producción. Si un link no existe en producción, NO lo crees.
 
 5. **CTAs (article_button):** ⚠️ OBLIGATORIO - Todos los CTAs del contenido deben estar migrados como bloques `article_button` en `main_blocks`, en las posiciones correctas donde aparecen en producción.
 
@@ -68,8 +68,11 @@ Cuando te pidan migrar un artículo, sigue este proceso:
 1. Identifica la featured image (hero) - primera imagen grande
 2. Identifica TODAS las imágenes del contenido
 3. Descarga cada imagen
-4. Súbelas a S3 usando el script apropiado o directamente con PHP
-5. Verifica que todas estén en S3 antes de continuar
+4. **Nombra cada imagen acorde a su contenido** - El nombre debe describir lo que muestra la imagen (ej: "woman-standing-in-cattle-farm.webp", "man-using-macbook-cafe.webp")
+5. Súbelas a S3 usando el script apropiado o directamente con PHP
+   - Featured: `articles/featured/[nombre-descriptivo-del-contenido].webp`
+   - Content: `articles/main-content/[nombre-descriptivo-del-contenido].webp`
+6. Verifica que todas estén en S3 antes de continuar
 
 ### Paso 3: Crear Archivo Markdown
 1. Genera un UUID único nuevo (NUNCA copiar de otro artículo)
@@ -92,8 +95,9 @@ Cuando te pidan migrar un artículo, sigue este proceso:
 ### Paso 5: Links
 1. Extrae TODOS los links del contenido principal de producción
 2. Compara uno por uno con el artículo migrado
-3. Agrega cualquier link faltante en formato Bard correcto
-4. Verifica formato:
+3. **NUNCA inventes URLs** - Todos los links deben ser exactamente como están en producción. Si un link no existe en producción, NO lo crees.
+4. Agrega cualquier link faltante en formato Bard correcto (solo si existe en producción)
+5. Verifica formato:
    - Links externos: `rel: "noopener noreferrer"`, `target: _blank`
    - Links internos: `rel: null`, `target: null`, `title: null`
 
@@ -113,16 +117,17 @@ Cuando te pidan migrar un artículo, sigue este proceso:
 ### Paso 8: Verificación Final
 Antes de considerar la migración completa, verifica CADA punto del checklist crítico:
 - [ ] UUID único (no duplicado)
-- [ ] Featured image en S3
-- [ ] TODAS las content images en S3
-- [ ] TODOS los links del contenido incluidos
-- [ ] CTAs migrados correctamente
+- [ ] Featured image (hero) en S3 con nombre descriptivo acorde al contenido
+- [ ] TODAS las content images en S3 con nombres descriptivos
+- [ ] TODOS los links del contenido incluidos y verificados (NUNCA inventados)
+- [ ] URLs de links exactamente como en producción (nada inventado)
+- [ ] CTAs migrados correctamente y en posiciones correctas
 - [ ] Contenido exacto de producción (nada inventado)
 - [ ] hold=true y published=true
-- [ ] Campos SEO completos
+- [ ] Campos SEO completos según documentación
 - [ ] Routing agregado
 - [ ] Redirect agregado
-- [ ] Key Takeaways en after_blocks (si aplica)
+- [ ] Key Takeaways en after_blocks usando article_key_takeaways (si aplica)
 - [ ] Quote boxes migrados (si aplica)
 - [ ] Comillas dobles en todos los strings
 
