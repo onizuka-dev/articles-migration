@@ -6,6 +6,18 @@ This directory contains scripts and documentation for migrating articles to the 
 
 **Para empezar rápidamente, lee primero:** [`QUICK-START.md`](./QUICK-START.md)
 
+## 📋 Proceso Completo de Migración
+
+**Para entender el proceso completo paso a paso:**
+- 📋 **[`MIGRATION-PROCESS.md`](./MIGRATION-PROCESS.md)** - ⭐ **NUEVO** - Proceso detallado paso a paso
+
+Este documento describe:
+- Qué scripts ejecutar y en qué orden
+- Qué decisiones tomar cuando algo no mapea directamente
+- Qué validaciones hacer al final
+- Errores comunes y soluciones
+- Flujo completo de migración
+
 ## 🤖 Instrucciones para Cursor AI
 
 **Si vas a usar Cursor AI con un agente para migrar artículos:**
