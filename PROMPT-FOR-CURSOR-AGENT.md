@@ -30,7 +30,11 @@ Tienes acceso a la carpeta `articles-migration/` que contiene toda la documentac
 
 1. **UUID ÚNICO:** ⚠️ CRÍTICO - Cada artículo DEBE tener un UUID v4 único. NUNCA copies el UUID de otro artículo. Si dos artículos comparten el mismo UUID, Statamic solo reconocerá uno.
 
-2. **NO INVENTAR CONTENIDO:** ⚠️ CRÍTICO - NUNCA inventes, crees o modifiques contenido que no existe en la página de producción. TODO el contenido (títulos, párrafos, listas, descripciones) DEBE ser exacto de producción. Si no encuentras algo en producción, NO lo crees.
+2. **NO INVENTAR NI PARAFRASEAR CONTENIDO:** ⚠️ CRÍTICO - NUNCA inventes, crees, modifiques o PARAFRASEES contenido que no existe en la página de producción. TODO el contenido (títulos, párrafos, listas, descripciones) DEBE ser copiado **PALABRA POR PALABRA** exactamente como está en producción. NUNCA simplifiques, acortes o "mejores" el texto. Si no encuentras algo en producción, NO lo crees. Errores comunes a EVITAR:
+   - Cambiar "looking to file" a "filing" ❌
+   - Cambiar "They can also reduce" a "and reduce" ❌
+   - Cambiar "our" a "their" ❌
+   - Eliminar palabras como "then", "you", "the" ❌
 
 3. **IMÁGENES EN S3:** ⚠️ OBLIGATORIO - TODAS las imágenes (featured + content images) DEBEN estar subidas a S3. NUNCA dejes imágenes locales. Rutas correctas:
    - Featured (hero): `articles/featured/[nombre-descriptivo].webp` - El nombre DEBE ser acorde al contenido de la imagen (ej: "woman-standing-in-cattle-farm.webp", "man-using-macbook-cafe.webp")
@@ -114,22 +118,34 @@ Cuando te pidan migrar un artículo, sigue este proceso:
    - Formato: `/articles/{old-slug}` => `/articles/{slug_category}/{slug}`
    - Verificar que no exista antes de agregar
 
-### Paso 8: Verificación Final
-Antes de considerar la migración completa, verifica CADA punto del checklist crítico:
-- [ ] UUID único (no duplicado)
-- [ ] Featured image (hero) en S3 con nombre descriptivo acorde al contenido
-- [ ] TODAS las content images en S3 con nombres descriptivos
-- [ ] TODOS los links del contenido incluidos y verificados (NUNCA inventados)
-- [ ] URLs de links exactamente como en producción (nada inventado)
-- [ ] CTAs migrados correctamente y en posiciones correctas
-- [ ] Contenido exacto de producción (nada inventado)
-- [ ] hold=true y published=true
-- [ ] Campos SEO completos según documentación
-- [ ] Routing agregado
-- [ ] Redirect agregado
+### Paso 8: Verificación Final - ⚠️ OBLIGATORIO
+**SIEMPRE debes ejecutar el script de verificación al final de cada migración. NO preguntes, SOLO ejecútalo:**
+
+```bash
+php articles-migration/verify-migration.php content/collections/articles/[fecha].[slug].md https://bizee.com/articles/[slug]
+```
+
+El script verificará automáticamente:
+- UUID único
+- Campos SEO completos
+- Imágenes en S3
+- Links del contenido
+- CTAs migrados
+- Videos
+- Tablas
+- Routing y redirects
+- Estructura de bloques
+
+**Si el script reporta errores:**
+1. Corrige TODOS los errores antes de considerar la migración completa
+2. Vuelve a ejecutar el script hasta que no haya errores
+3. Los warnings pueden ser falsos positivos (ej: links relativos vs absolutos)
+
+**Checklist adicional manual (después del script):**
+- [ ] Contenido exacto de producción (nada inventado ni parafraseado)
+- [ ] Comillas dobles en todos los strings YAML
 - [ ] Key Takeaways en after_blocks usando article_key_takeaways (si aplica)
 - [ ] Quote boxes migrados (si aplica)
-- [ ] Comillas dobles en todos los strings
 
 ## 📝 FORMATO DE RESPUESTA
 

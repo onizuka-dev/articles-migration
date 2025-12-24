@@ -391,9 +391,13 @@ main_blocks:
 
 ### Quotes (quote_box):
 
+**⚠️ IMPORTANTE: Los quotes DEBEN ser bloques `quote_box` INTERCALADOS en `main_blocks`, NO solo al final.**
+
 **Cómo identificar:**
 - Buscar elementos con `style="--quote-box-color:var(--primary-600)"`
 - Texto destacado en cajas especiales
+- Texto entre comillas atribuido a personas: `Lacerte says: "..."`
+- Frases de expertos, fundadores o entrevistados
 
 **Estructura:**
 ```yaml
@@ -406,14 +410,49 @@ main_blocks:
       content:
         -
           type: text
-          text: "[Quote text]"
+          text: "[Quote text SIN comillas]"
   type: quote_box
   enabled: true
 ```
 
+**Reglas de Posicionamiento:**
+1. **INTERCALAR en main_blocks** - El quote_box va DESPUÉS del párrafo que lo introduce
+2. **Extraer del texto narrativo** - Si dice `Scott says: "People buy from people"`, crear:
+   - Un rich_text con "Scott emphasizes that trust comes from personal connection."
+   - Un quote_box con "People buy from people."
+3. **Sin comillas en el texto** - El componente añade las comillas visualmente
+4. **IDs únicos** - Usar formato `quote001`, `quote002`, etc.
+
+**Ejemplo correcto:**
+```yaml
+main_blocks:
+  -
+    id: mb002trust
+    type: rich_text
+    content:
+      - type: paragraph
+        content:
+          - type: text
+            text: 'Lacerte emphasizes the importance of building lasting companies.'
+  -
+    id: quote001lacerte
+    type: quote_box
+    version: quote_box_1
+    content:
+      - type: paragraph
+        content:
+          - type: text
+            text: 'It takes intentionality around product, purpose, people, and culture strategies.'
+  -
+    id: mb003next
+    type: rich_text
+    # siguiente sección...
+```
+
 **Decisiones:**
-- Si el quote está dentro de un párrafo: Extraerlo y crear un bloque separado
-- Mantener el texto exacto del quote
+- Si el quote está dentro de un párrafo: Extraerlo y crear un bloque separado INTERCALADO
+- Mantener el texto exacto del quote pero SIN las comillas
+- **NUNCA** poner todos los quotes solo en `after_blocks`
 
 ### Key Takeaways:
 

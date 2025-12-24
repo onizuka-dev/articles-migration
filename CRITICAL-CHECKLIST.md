@@ -28,17 +28,24 @@
 - ✅ Verificar estructura correcta: `label` con párrafos, `url`, `open_in_new_tab`, `type: article_button`, `enabled: true`
 - ✅ **ESTA VERIFICACIÓN ES OBLIGATORIA Y DEBE HACERSE AL FINAL DE CADA MIGRACIÓN**
 
-### 4. ⚠️ **NO INVENTAR CONTENIDO** - CRÍTICO
-- ✅ **NEVER invent, create, or modify content that does not exist in the production page**
-- ✅ All content (headings, paragraphs, lists, descriptions, etc.) MUST be extracted exactly as it appears in production
+### 4. ⚠️ **NO INVENTAR NI PARAFRASEAR CONTENIDO** - CRÍTICO
+- ✅ **NEVER invent, create, modify, OR PARAPHRASE content that does not exist in the production page**
+- ✅ All content (headings, paragraphs, lists, descriptions, etc.) MUST be extracted **WORD FOR WORD** exactly as it appears in production
+- ✅ **NEVER simplify, shorten, or "improve" the text** - copy it EXACTLY
 - ✅ If you cannot find specific content in production, DO NOT create it
-- ✅ This is a migration, not content creation
+- ✅ This is a migration, not content creation or editing
 - ✅ Always verify that:
-  - All headings match production exactly
-  - All paragraphs match production exactly
-  - All numbered/bulleted items match production exactly
-  - All descriptions and explanations match production exactly
+  - All headings match production **EXACTLY word for word**
+  - All paragraphs match production **EXACTLY word for word**
+  - All numbered/bulleted items match production **EXACTLY word for word**
+  - All descriptions and explanations match production **EXACTLY word for word**
   - If production has X items, the migrated article must have exactly X items (not X-1, not X+1)
+- ✅ **Common mistakes to AVOID:**
+  - Changing "looking to file" to "filing" ❌
+  - Changing "They can also reduce" to "and reduce" ❌
+  - Changing "our" to "their" ❌
+  - Removing words like "then", "you", "the" ❌
+  - Adding or removing periods, commas ❌
 
 ### 5. ⚠️ **STATUS DEL ARTÍCULO** - OBLIGATORIO
 - ✅ **hold: true** - Siempre debe estar presente
@@ -100,6 +107,19 @@
       enabled: true
   ```
 - ✅ Los quotes deben estar en la posición correcta donde aparecen en producción
+
+## ⚠️ PASO FINAL OBLIGATORIO: Ejecutar Script de Verificación
+
+**SIEMPRE debes ejecutar el script de verificación al final de cada migración. NO preguntes, SOLO ejecútalo:**
+
+```bash
+php articles-migration/verify-migration.php content/collections/articles/[fecha].[slug].md https://bizee.com/articles/[slug]
+```
+
+**Si el script reporta errores:**
+1. Corrige TODOS los errores antes de considerar la migración completa
+2. Vuelve a ejecutar el script hasta que no haya errores
+3. Los warnings pueden ser falsos positivos (ej: links relativos vs absolutos)
 
 ## ✅ Checklist Final Antes de Completar Migración
 
