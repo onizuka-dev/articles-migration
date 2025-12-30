@@ -29,18 +29,18 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
       found: false,
       visible: false,
       src: null,
-      dimensions: null
+      dimensions: null,
     },
     contentImages: {
       expected: 0,
       found: 0,
       visible: 0,
-      images: []
+      images: [],
     },
     screenshots: {
       hero: null,
-      fullPage: null
-    }
+      fullPage: null,
+    },
   };
 
   let browser;
@@ -48,12 +48,12 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
   try {
     browser = await chromium.launch({
       headless: true,
-      args: ['--ignore-certificate-errors']
+      args: ['--ignore-certificate-errors'],
     });
 
     const context = await browser.newContext({
       ignoreHTTPSErrors: true,
-      viewport: { width: 1280, height: 720 }
+      viewport: { width: 1280, height: 720 },
     });
 
     const page = await context.newPage();
@@ -64,7 +64,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
       if (response.request().resourceType() === 'image' && !response.ok()) {
         failedImages.push({
           url: response.url(),
-          status: response.status()
+          status: response.status(),
         });
       }
     });
@@ -74,7 +74,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
     try {
       await page.goto(fullUrl, {
         waitUntil: 'networkidle',
-        timeout: 30000
+        timeout: 30000,
       });
     } catch (navError) {
       results.passed = false;
@@ -104,7 +104,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
       'header img[src*="featured"]',
       'img[src*="featured"]',
       'img[src*="hero"]',
-      'article img:first-of-type'
+      'article img:first-of-type',
     ];
 
     for (const selector of heroSelectors) {
@@ -158,7 +158,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
       '[class*="content"] img',
       'article section img',
       '.rich-text img',
-      'img[src*="main-content"]'
+      'img[src*="main-content"]',
     ];
 
     const allImages = [];
@@ -178,7 +178,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
               alt,
               visible: isVisible,
               dimensions: box ? { width: box.width, height: box.height } : null,
-              isContentImage: src.includes('main-content') || src.includes('content/')
+              isContentImage: src.includes('main-content') || src.includes('content/'),
             });
           }
         }
@@ -194,7 +194,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
       img.dimensions.height > 100 &&
       !img.src.includes('logo') &&
       !img.src.includes('icon') &&
-      !img.src.includes('avatar')
+      !img.src.includes('avatar'),
     );
 
     results.contentImages.found = contentImages.length;
@@ -250,7 +250,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
     const heroScreenshot = path.join(screenshotDir, `${slug}-hero-${timestamp}.png`);
     await page.screenshot({
       path: heroScreenshot,
-      clip: { x: 0, y: 0, width: 1280, height: 720 }
+      clip: { x: 0, y: 0, width: 1280, height: 720 },
     });
     results.screenshots.hero = heroScreenshot;
 
@@ -258,7 +258,7 @@ async function verifyVisualElements(articlePath, baseUrl = 'https://bizee.test')
     const fullScreenshot = path.join(screenshotDir, `${slug}-full-${timestamp}.png`);
     await page.screenshot({
       path: fullScreenshot,
-      fullPage: true
+      fullPage: true,
     });
     results.screenshots.fullPage = fullScreenshot;
 
